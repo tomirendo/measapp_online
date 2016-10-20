@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+    <head>
+            <title>
+                MeasApp Online
+            </title>
+            <link href='/static/bower_components/angular/angular-csp.css' rel='stylesheet' />
+            <link href='/static/bower_components/angular-material/angular-material.min.css' rel='stylesheet' />
+    </head>
+    <body ng-app='MyApp' ng-controller='AppCtrl' >
+
+<section layout="row" flex>
+     <md-sidenav
+        class="md-sidenav-left"
+        md-component-id="left"
+        md-is-locked-open="$mdMedia('gt-md')"
+        md-whiteframe="4">
+
+      <md-toolbar md-theme="docs-dark" >
+        <h1 class="md-toolbar-tools">MeasApp Online</h1>
+      </md-toolbar>
+      <md-content layout-padding >
+        
+          <md-content  layout-gt-sm="row" layout-padding >
+      <md-input-container layout-sm=row >
+        <label>Name</label>
+        <input ng-model="measurement_meta_data.name">
+      </md-input-container>
+
+      <md-input-container layout-sm=row >
+        <label>Step Time(Sec)</label>
+        <input ng-model="measurement_meta_data.step">
+      </md-input-container>
+
+          </md-content>
+            <md-button ng-click="add_measurement()"> Add Measurement </md-button>
+            </p><p>
+            <md-button ng-click="add_output()"> Add Output</md-button>
+        </p>
+            </p>
+            <md-divider></md-divider>
+        <p>
+            <md-button ng-click="log()">console </md-button>
+        </p>
+      </md-content>
+
+    </md-sidenav>
+
+    <md-content flex layout-padding>
+    <md-list>
+       <md-list-item ng-repeat="measurement in measurements">
+                <md-container class="md-block" layout-gt-xs>
+                    <md-icon md-svg-src="/static/icons/desktop-download.svg"  />
+               </md-container>
+            
+            <md-divider></md-divider>
+               <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+            <label>Device</label>
+            <md-select ng-model="measurement.device">
+              <md-option ng-repeat="device in devices" value={{devices.indexOf(device)}}>
+                {{device.name}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+
+             <md-input-container class="md-block" flex-gt-sm>
+            <label>Input</label>
+            <md-select ng-model="measurement.input">
+              <md-option ng-repeat="input in devices[measurement.device].inputs" value={{input}}>
+                {{input}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+          <md-container>
+            <md-button class="md-mini md-warn md-fab" aria-label='remove object' ng-click="remove(measurements, $index)" >
+                <md-icon md-svg-src="/static/icons/circle-slash.svg"></md-icon>
+            </md-button>
+            </md-container>
+          </div>
+        </md-list-item>
+    </md-list>
+<md-list>
+       <md-list-item ng-repeat="output in outputs" class='md-warn'>
+
+    <md-divider></md-divider>
+               <div layout-gt-sm="row" md-colors='grey'>
+               <md-container class="md-block" layout-gt-xs>
+                    <md-icon md-svg-src="/static/icons/dashboard.svg"  />
+               </md-container>
+            <md-input-container class="md-block" flex-gt-sm>
+            <label>Device</label>
+            <md-select ng-model="output.device">
+              <md-option ng-repeat="device in devices" value={{devices.indexOf(device)}} class='md-warn'>
+                {{device.name}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+
+             <md-input-container class="md-block" flex-gt-sm>
+            <label>Output</label>
+            <md-select ng-model="output.output">
+              <md-option ng-repeat="output in devices[output.device].outputs" value={{output}}>
+                {{output}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+            <md-input-container flex>
+                <label>Begin Value</label>
+                <input ng-model=output.begin_value>
+            </md-input-container>
+             <md-input-container flex>
+                <label>End Value</label>
+                <input ng-model=output.end_value>
+            </md-input-container>
+
+              <md-input-container flex>
+                <label>Steps</label>
+                <input ng-model=output.steps>
+            </md-input-container>
+            <md-container>
+                <md-button class='md-primary md-raised'>Init</md-button>
+            </md-container>
+            <md-container>
+            <md-button class="md-mini md-warn md-fab" aria-label='remove object' ng-click="remove(outputs, $index)" >
+                <md-icon md-svg-src="/static/icons/circle-slash.svg"></md-icon>
+            </md-button>
+            </md-container>
+           
+          </div>
+        </md-list-item>
+    </md-list>
+    </md-content>
+    </section>
+
+
+
+        
+            <script src='/static/bower_components/angular/angular.min.js' ></script>
+            <script src='/static/bower_components/angular-material/angular-material.min.js'></script>
+            <script src='/static/bower_components/angular-aria/angular-aria.min.js'></script>
+            <script src='/static/bower_components/angular-animate/angular-animate.min.js'></script>
+            <script src='/static/script.js') }} "></script>
+
+    </body>
+</html>
