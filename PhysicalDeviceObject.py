@@ -2,7 +2,6 @@ class PhysicalDeviceObject:
     def __init__(self, dictionary):
         self.name = dictionary.get("name", "Noname")
         self.object = dictionary['object'](dictionary.get("properties",{}))
-
         self.check_connection()
 
     def check_connection(self):
@@ -11,5 +10,6 @@ class PhysicalDeviceObject:
     def to_dict(self):
         return {'name' : self.name,
                 'inputs' : self.object.list_inputs(),
-                'outputs' : self.object.list_outputs()}
+                'outputs' : self.object.list_outputs(),
+                'properties' : list(self.object.get_properties().items())}
 
