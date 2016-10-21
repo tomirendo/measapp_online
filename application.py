@@ -11,7 +11,7 @@ def return_response(result):
     return dumps({'error' : False , 'result' : result})
 def return_error(error_description):
     return dumps({'error' : True, 'error_description' : str(error_description)})
-
+done_response = return_response({"Done" : True})
 
 def find_device(name):
     for device in devices:
@@ -36,8 +36,17 @@ def update_property():
             device.object.set_property(property, value)
     except Exception as e:
         return return_error(e)
-    return return_response({"Done" : True})
+    return done_response
 
+@app.route('/update_output/', methods=['POST'])
+def update_output():
+    try :
+        request.get_data()
+        device = find_device(request.json.get("name"))
+        device.object.write_output(request.json['output'], request.json['value'])
+        return done_response
+    except Exception as e:
+        return return_error(e)
 
 if __name__ == "__main__":
     try : 

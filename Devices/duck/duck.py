@@ -47,11 +47,11 @@ class Duck(Device):
 
     def read_input(self, input_name):
         if has_adc and input_name in self.inputs:
-            return self.connection.run("GET_ADC,{}".format(self.inputs.find(input_name)))
+            return self.connection.run("GET_ADC,{}".format(self.inputs.index(input_name)))
         raise Exception("Trying to read from non existing port")
 
     def write_output(self, output_name, value):
-        port = self.outputs.find(output_name)//2
+        port = self.outputs.index(output_name)//2
         if "AC" in output_name : 
             self.connection.run("AC {}:{}".format(float(value), port), read=False)
         elif "DC" in output_name:

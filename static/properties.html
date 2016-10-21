@@ -38,14 +38,15 @@
 
     </md-sidenav>
 
-    <md-content flex layout-padding>
+    <md-content class='md-whiteframe-1dp' ng-show="selected_device" flex layout-padding >
 
     <md-list ng-cloak>
 
-              <md-subheader class="md-no-sticky">{{selected_device.name}}</md-subheader>
+              <md-subheader class="md-no-sticky">{{selected_device.name}} - Properties</md-subheader>
               <md-list-item ng-repeat="property in selected_device.properties">
                 <p> {{ property[0] }} </p>
-                <md-input-container class="md-secondary" > <input ng-model='property[1]'></md-checkbox>
+                <md-input-container class="md-secondary" > <input aria-label="INPUT" ng-model='property[1]'></md-checkbox>
+                </md-input-container>
               </md-list-item>
 
 
@@ -55,6 +56,24 @@
       <md-progress-linear md-mode="indeterminate" ng-show="loading" ></md-progress-linear>
 
     </md-content>
+    <md-content layout="row"></md-content>
+    <md-content class='md-whiteframe-1dp' ng-show="selected_device" flex layout-padding >
+
+    <md-list ng-cloak>
+
+              <md-subheader class="md-no-sticky">Outputs</md-subheader>
+              <md-list-item ng-repeat="output in outputs_value">
+                <p> {{ output.name }} </p>
+                <md-input-container class="md-secondary" > <input aria-label="INPUT" ng-model="output.value"></md-input-container> 
+              </md-list-item>
+
+
+    </md-list>
+
+    <md-button class='md-primary' ng-click='update_outputs(selected_device)'>Update Values</md-button>
+
+    </md-content>
+ 
     </section>
 
 
