@@ -66,14 +66,17 @@ class Duck(Device):
         return self.connection.serial_device.readline().decode()
 
     def set_property(self, name, value):
+        begin_data = self.frequency, self.points, self.ramp_time 
         if name in self.properties:
-            if name == self.properties[0]:
+            if name == self.properties[0]: 
                 self.frequency = float(value)
             elif name == self.properties[1]:
                 self.points = int(value)
-            elif name == self.properties[2]:
+            elif name == self.properties[2]: 
                 self.ramp_time = float(value)
-            self._update_sine_function()
+
+            if begin_data != (self.frequency, self.points, self.ramp_time):
+                self._update_sine_function()
         else :
             raise Exception("Unknown Property to set")
 

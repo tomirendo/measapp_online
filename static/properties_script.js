@@ -30,7 +30,7 @@ angular.module('MyApp', ['ngMaterial'])
   }
   $scope.update = function(device){
     $scope.loading = true;
-    $http.post('/update_property/', device).then(function(result){
+    $http.post('/update_property/', device ).then(function(result){
       $scope.loading = false;
       data = result.data;
       if (data.error){

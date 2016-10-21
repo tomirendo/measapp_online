@@ -29,7 +29,14 @@ def console():
 
 @app.route('/update_property/', methods=['POST'])
 def update_property():
-    device = request.args.get("device")
+    try :
+        request.get_data()
+        device = find_device(request.json.get("name"))
+        for property, value in request.json['properties']:
+            device.object.set_property(property, value)
+    except Exception as e:
+        return return_error(e)
+    return return_response({"Done" : True})
 
 
 if __name__ == "__main__":
