@@ -6,7 +6,7 @@ angular.module('MyApp', ['ngMaterial'])
   }
 
   $scope.devices = [];
-  $scope.loading = false;
+  $scope.loading = 0;
   $scope.outputs_value = [];
   $scope.show_alert = function(text){
       $mdDialog.show(
@@ -34,9 +34,9 @@ angular.module('MyApp', ['ngMaterial'])
     console.log($scope.outputs_value);
   }
   $scope.update = function(device){
-    $scope.loading = true;
+    $scope.loading += 1;
     $http.post('/update_property/', device ).then(function(result){
-      $scope.loading = false;
+      $scope.loading -= 1;
       data = result.data;
       if (data.error){
         $scope.show_alert(data.error_description);
@@ -53,20 +53,20 @@ angular.module('MyApp', ['ngMaterial'])
     console.log($scope.outputs_value);
     for (output in $scope.outputs_value){
       output = $scope.outputs_value[output];
-      if (output.value != null){
-        $scope.loading = true;
+      if (!(output.value === null)){
+        $scope.loading+=1; 
         $http.post('/update_output/', 
             {name : $scope.selected_device.name,
               output : output.name,
               value : output.value})
         .then(function (result){
-          $scope.loading = false;
+          $scope.loading -= 1;
           data = result.data;
           if (data.error){
             $scope.show_alert(data.error_description);
           }
         }, function (error){
-          $scope.loading = false;
+          $scope.loading -= 1 ;
         });
       }
     }

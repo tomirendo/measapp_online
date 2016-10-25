@@ -1,7 +1,10 @@
 #!/usr/local/bin/python3.5
-from devices import devices, close_devices
+import devices
+from measurements import Measurement 
 from flask import Flask, render_template, request
 from json import dumps
+import threading
+
 
 app = Flask(__name__)
 
@@ -12,6 +15,11 @@ def return_response(result):
 def return_error(error_description):
     return dumps({'error' : True, 'error_description' : str(error_description)})
 done_response = return_response({"Done" : True})
+
+devices = devices.devices()
+devices.__enter__()
+measurements = []
+threads = []
 
 def find_device(name):
     for device in devices:
@@ -31,7 +39,7 @@ def console():
 def update_property():
     try :
         request.get_data()
-        device = find_device(request.json.get("name"))
+        device = find_device(request.json["name"])
         for property, value in request.json['properties']:
             device.object.set_property(property, value)
     except Exception as e:
@@ -42,17 +50,39 @@ def update_property():
 def update_output():
     try :
         request.get_data()
-        device = find_device(request.json.get("name"))
+        device = find_device(request.json["name"])
         device.object.write_output(request.json['output'], request.json['value'])
         return done_response
     except Exception as e:
         return return_error(e)
 
+@app.route('/begin_measurement/', methods = ['POST'])
+def measure():
+    try :
+        request.get_data()
+        print(request.json)
+        meas = Measurement(request.json, find_device)
+        measurements.append(meas)
+        thread =threading.Thread(target=meas.run, args=())
+        threads.append(thread)
+        thread.start()
+        return return_response({"measurement_id" : id(meas)})
+    except Exception as e:
+        return return_error(e)
+
+@app.route("/measurement/<int:measurement_id>/")
+def get_measurement(measurement_id):
+    try:
+        measurement = [i for i in measurements if id(i) == measurement_id][0]
+        return return_response(measurement.to_dict())
+
+    except Exception as e:
+        return return_error(e)
 if __name__ == "__main__":
     try : 
-        app.run()
-        close_devices()
+        app.run(use_reloader = False)
+        devices.__exit__()
     except : 
-        close_devices()
+        devices.__exit__()
 
 

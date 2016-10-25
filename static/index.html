@@ -26,10 +26,9 @@
         <label>Name</label>
         <input ng-model="measurement_meta_data.name">
       </md-input-container>
-
       <md-input-container layout-sm=row >
         <label>Step Time(Sec)</label>
-        <input ng-model="measurement_meta_data.step">
+        <input ng-model="measurement_meta_data.step_time">
       </md-input-container>
 
           </md-content>
@@ -41,6 +40,7 @@
         <p>
             <md-button ng-click="log()">console </md-button>
         </p>
+      <md-progress-linear md-mode="indeterminate" ng-show="loading" ></md-progress-linear>
       </md-content>
 
     </md-sidenav>
@@ -56,7 +56,7 @@
                <div layout-gt-sm="row">
             <md-input-container class="md-block" flex-gt-sm>
             <label>Device</label>
-            <md-select ng-model="measurement.device">
+            <md-select ng-model="measurement.device_id">
               <md-option ng-repeat="device in devices" value={{devices.indexOf(device)}}>
                 {{device.name}}
               </md-option>
@@ -66,7 +66,7 @@
              <md-input-container class="md-block" flex-gt-sm>
             <label>Input</label>
             <md-select ng-model="measurement.input">
-              <md-option ng-repeat="input in devices[measurement.device].inputs" value={{input}}>
+              <md-option ng-repeat="input in devices[measurement.device_id].inputs" value={{input}}>
                 {{input}}
               </md-option>
             </md-select>
@@ -89,7 +89,7 @@
                </md-container>
             <md-input-container class="md-block" flex-gt-sm>
             <label>Device</label>
-            <md-select ng-model="output.device">
+            <md-select ng-model="output.device_id">
               <md-option ng-repeat="device in devices" value={{devices.indexOf(device)}} class='md-warn'>
                 {{device.name}}
               </md-option>
@@ -99,16 +99,16 @@
              <md-input-container class="md-block" flex-gt-sm>
             <label>Output</label>
             <md-select ng-model="output.output">
-              <md-option ng-repeat="output in devices[output.device].outputs" value={{output}}>
+              <md-option ng-repeat="output in devices[output.device_id].outputs" value={{output}}>
                 {{output}}
               </md-option>
             </md-select>
           </md-input-container>
-            <md-input-container flex>
+            <md-input-container flex >
                 <label>Begin Value</label>
                 <input ng-model=output.begin_value>
             </md-input-container>
-             <md-input-container flex>
+             <md-input-container flex ng-model='output.end_value'>
                 <label>End Value</label>
                 <input ng-model=output.end_value>
             </md-input-container>
@@ -118,7 +118,7 @@
                 <input ng-model=output.steps>
             </md-input-container>
             <md-container>
-                <md-button class='md-primary md-raised'>Init</md-button>
+                <md-button class='md-primary md-raised' ng-click='init_device(devices[output.device_id], output.output, output.begin_value)'>Init</md-button>
             </md-container>
             <md-container>
             <md-button class="md-mini md-warn md-fab" aria-label='remove object' ng-click="remove(outputs, $index)" >

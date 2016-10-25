@@ -9,10 +9,10 @@ class ExampleDevice(Device):
         return True 
 
     def list_inputs(self):
-        return ['Port 1', 'Port 2']
+        return ['ADC 1', 'ADC 2']
 
     def list_outputs(self):
-        return ['ADC 1', 'ADC 2']
+        return ['Port 1', 'Port 2']
 
     def read_input(self, input_name):
         return 1

@@ -30,7 +30,7 @@ class Duck:
         self.serial_device.__exit__(*exp)
 
     def run(self, op = "NOP", verbose = False, read = True):
-        run_operation(self.serial_device, op, verbose, read)
+        return run_operation(self.serial_device, op, verbose, read)
 
     def buffer_ramp(self, dac_channel, adc_channel,
                 begin_voltage, end_voltage, number_of_steps, 
