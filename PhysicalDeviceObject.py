@@ -3,6 +3,8 @@ class PhysicalDeviceObject:
         self.name = dictionary.get("name", "Noname")
         self.object = dictionary['object'](dictionary.get("properties",{}))
         self.check_connection()
+        self.is_locked = False
+        self.owner = None
         print("Done Loading Device : {}".format(self.name))
 
     def check_connection(self):

@@ -63,7 +63,7 @@ def measure():
         print(request.json)
         meas = Measurement(request.json, find_device)
         measurements.append(meas)
-        thread =threading.Thread(target=meas.run, args=())
+        thread = threading.Thread(target=meas.run, args=())
         threads.append(thread)
         thread.start()
         return return_response({"measurement_id" : id(meas)})
@@ -73,11 +73,26 @@ def measure():
 @app.route("/measurement/<int:measurement_id>/")
 def get_measurement(measurement_id):
     try:
-        measurement = [i for i in measurements if id(i) == measurement_id][0]
-        return return_response(measurement.to_dict())
-
+        if measurement_id not in map(id, measurements):
+            raise exception("Cannot find measurement")
+        for measurement in measurements:
+            if id(measurement) == int(measurement_id):
+                return return_response(measurement.to_dict())
     except Exception as e:
         return return_error(e)
+
+@app.route("/stop_measurement/<int:measurement_id>/")
+def stop_measurement(measurement_id):
+    try:
+        if measurement_id not in map(id, measurements):
+            raise Exception("Cannot find measurement")
+        for measurement in measurements:
+            if id(measurement) == int(measurement_id):
+                measurement.running = False
+                return return_response({"Stopped" : True})
+    except Exception as e:
+        return return_error(e)
+
 if __name__ == "__main__":
     try : 
         app.run(use_reloader = False)

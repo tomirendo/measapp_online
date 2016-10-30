@@ -21,11 +21,13 @@ devices = [
         "name" : "Duck",
         "object" : Duck,
         "properties":{
-            "port" : "/dev/tty.usbmodem1411",
+            "port" : "/dev/tty.usbmodem1421",
             "has_adc" : True,
             "frequency" : 17,
             "points" : 80,
             "ramp_time" : 1
         },
         },
+        
+        
     ]

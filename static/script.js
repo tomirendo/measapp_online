@@ -56,6 +56,8 @@ angular.module('MyApp', ['ngMaterial'])
       $scope.loading-=1;
       if (result.data.error){
         $scope.show_alert(result.data.error_description);
+      } else {
+        window.open("http://localhost:5000/static/measurement.html?measurement_id=" + result.data.result.measurement_id, "_blank");
       }
 
     }, function(error){
