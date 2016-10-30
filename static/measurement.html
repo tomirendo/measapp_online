@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+    <head>
+            <title>
+                MeasApp Online
+            </title>
+            <link href='/static/bower_components/angular/angular-csp.css' rel='stylesheet' />
+            <link href='/static/bower_components/angular-material/angular-material.min.css' rel='stylesheet' />
+    </head>
+    <body ng-app='MyApp' ng-controller='AppCtrl' >
+
+<section layout="row" flex>
+     <md-sidenav
+        class="md-sidenav-left"
+        md-component-id="left"
+        md-is-locked-open="$mdMedia('gt-md')"
+        md-whiteframe="4">
+
+      <md-toolbar md-theme="docs-dark" >
+        <h1 class="md-toolbar-tools">MeasApp Online</h1>
+      </md-toolbar>
+      <md-content layout-padding >
+        
+          <h2 layout="row">{{ measurement_data.name }}</h2>
+          <md-button layout="row">Step Time: {{ measurement_data.step_time }}</md-button>
+          <md-button layout="row" class='md-warn' ng-show='measurement_data.running'> Running </md-button>
+          <md-button layout="row" class='md-raised md-warn' ng-show='measurement_data.running' ng-click='stop_measurement()'> Stop Measurement </md-button>
+
+      <md-progress-linear md-mode="indeterminate" ng-show="loading" ></md-progress-linear>
+      </md-content>
+
+  </md-sidenav>
+
+    <md-content class='md-whiteframe-1dp' flex layout-padding >
+  <canvas id="line" class="chart chart-line" chart-data="data"
+chart-labels="labels" chart-series="series" chart-options="options"
+ >
+</canvas> 
+  
+    </md-content>
+ 
+    </section>
+
+
+        
+            <script src='/static/bower_components/angular/angular.min.js' ></script>
+            <script src='/static/bower_components/angular-material/angular-material.min.js'></script>
+            <script src='/static/bower_components/angular-aria/angular-aria.min.js'></script>
+            <script src='/static/bower_components/angular-animate/angular-animate.min.js'></script>
+            <script src='/static/bower_components/chart.js/dist/Chart.min.js'></script>
+            <script src="/static/bower_components/angular-chart.js/dist/angular-chart.min.js"></script>
+            <script src='/static/measurement.js'></script>
+
+    </body>
+</html>
