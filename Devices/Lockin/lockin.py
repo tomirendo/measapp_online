@@ -3,6 +3,7 @@ from itertools import product
 from time import sleep
 import pyvisa
 from enum import Enum
+from collections import OrderedDict
 
 verbose = False 
 
@@ -125,13 +126,13 @@ class Lockin(Device):
         Device.__init__(self) 
         self.inputs = ["nx","x","y","r","phase"]
         self.port = properties['port']
-        #self.connection = pyvisa.ResourceManager().open_resource(self.port)
-        self.connection = mock_connection() #Mock connection for tests
+        self.connection = pyvisa.ResourceManager().open_resource(self.port)
+        #self.connection = mock_connection() #Mock connection for tests
         self.outputs = []
         self.properties = self._read_properties()
 
     def _read_properties(self):
-        dictionary = {}
+        dictionary = OrderedDict()
         for property, command in property_command_dictionary.items():
             data = self.connection.query(command +" ?")
             index = int(data)
@@ -180,7 +181,9 @@ class Lockin(Device):
 
         if value in property_type_dictionary[name]:
             self.properties[name] = value
-            self.connection.query("{} {}".format(property_command_dictionary[name], get_index_of_enum(value)))
+            text_to_write = "{} {}".format(property_command_dictionary[name], get_index_of_enum(value))
+            print(text_to_write)
+            self.connection.write(text_to_write)
         else :
             raise Exception("Value isn't of type {}".format(type(property_type_dictionary[name])))
 
