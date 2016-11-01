@@ -1,5 +1,7 @@
 from Devices.example_device import ExampleDevice
 from Devices.duck.duck import Duck
+from Devices.Lockin.lockin import Lockin
+
 devices = [
         {
         "name" : "Example Device 1", 
@@ -10,11 +12,10 @@ devices = [
             } 
         },
         {
-        "name" : "Example Device 2", 
-        "object" : ExampleDevice,
+        "name" : "Lockin 1", 
+        "object" : Lockin,
         "properties" : {
-            "buad" : 1,
-            "communication_port" : "2",
+            "port" : "GPIB0::8::INSTR",
             } 
         },
         {  
