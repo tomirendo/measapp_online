@@ -1,6 +1,7 @@
 from Devices.example_device import ExampleDevice
 from Devices.duck.duck import Duck
 from Devices.Lockin.lockin import Lockin
+from Devices.keithley.keithley import Keithley
 
 devices = [
         {
@@ -16,6 +17,13 @@ devices = [
         "object" : Lockin,
         "properties" : {
             "port" : "GPIB0::8::INSTR",
+            } 
+        },
+        {
+        "name" : "Keithley 1", 
+        "object" : Keithley,
+        "properties" : {
+            "port" : "GPIB0::24::INSTR",
             } 
         },
         {  

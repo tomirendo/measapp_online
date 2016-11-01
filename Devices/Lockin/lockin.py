@@ -101,7 +101,6 @@ class Reserve(Enum):
     normal = "Normal"
     low_noise = "Low Noise"
 
-
 property_type_dictionary = { "Input" : Input,
                             "Sensitivity" : Sensitivity,
                             "Time Constant" : TimeConstant,
