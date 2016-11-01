@@ -48,9 +48,14 @@
               <md-button class='md-primary' ng-click='update(selected_device)'>update device</md-button>
           </md-content>
               <md-list-item  ng-repeat="property in selected_device.properties">
-                <p> {{ property[0] }} </p>
-                <md-input-container class="md-secondary" > <input aria-label="INPUT" ng-model='property[1]'></md-checkbox>
+                <p> {{ property.name }} </p>
+                <md-input-container class="md-secondary" > <input ng-show='is_number_property(property)' aria-label="INPUT" ng-model='property.value'>
                 </md-input-container>
+                <md-select ng-model="property.value" aria-label='select' ng-hide='is_number_property(property)'>
+                  <md-option ng-repeat="type in property.type"  value={{type}}>
+                  {{type}}
+                </md-option>
+                </md-select>
               </md-list-item>
 
 

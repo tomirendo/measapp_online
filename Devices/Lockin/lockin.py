@@ -1,4 +1,4 @@
-from Device import Device
+from Device import Device, get_enum_value_by_index, get_index_of_enum, list_values_of_enum_type
 from itertools import product
 from time import sleep
 import pyvisa
@@ -11,6 +11,8 @@ class mock_connection:
         print("Query : {} ".format(args))       
         if args[0] == '*IDN?':
             return "Stanford_Research_Systems,SR830"
+        elif args[0].split(" ")[0].strip() in property_command_dictionary.values():
+            return '1'
         else :
             return "0,1,2,3,4"
     def close(self):
@@ -117,8 +119,6 @@ property_command_dictionary = { "Input" : "ISRC",
                             "Filter" : "ILIN",
                             "Reserve" : "RMOD"}
 
-def get_index_of_enum(value):
-    return list(type(value).__members__.values()).index(value)
 
 class Lockin(Device):
     def __init__(self, properties):
@@ -131,14 +131,14 @@ class Lockin(Device):
         self.properties = self._read_properties()
 
     def _read_properties(self):
-        return { "Input" : Input.A,
-                "Sensitivity" : Sensitivity.V_1_pA,
-                "Time Constant" : TimeConstant.s_1,
-                "Slope" : Slope.slope_6_dB_oct,
-                "Coupling" : Coupling.AC,
-                "Ground" : Ground.float,
-                "Filter" : Filter.none,
-                "Reserve" : Reserve.normal}
+        dictionary = {}
+        for property, command in property_command_dictionary.items():
+            data = self.connection.query(command +" ?")
+            index = int(data)
+            value = get_enum_value_by_index(property_type_dictionary[property], index)
+            dictionary[property] = value
+        return dictionary
+
 
     def check_connection(self):
         return self.connection.query("*IDN?").startswith('Stanford_Research_Systems,SR830')
@@ -174,20 +174,23 @@ class Lockin(Device):
         if name not in property_type_dictionary:
             raise Exception("Unknown property {}".format(name))
 
-        old_properties = dict(self.properties)
+        #Convert String to Enum if required
+        if value in list_values_of_enum_type(property_type_dictionary[name]):
+            value = property_type_dictionary[name](value)
+
         if value in property_type_dictionary[name]:
             self.properties[name] = value
-            self.connection.write("{} {}".format(property_command_dictionary[name], get_index_of_enum(value)))
+            self.connection.query("{} {}".format(property_command_dictionary[name], get_index_of_enum(value)))
         else :
             raise Exception("Value isn't of type {}".format(type(property_type_dictionary[name])))
 
 
     def get_properties(self):
+        self.properties = self._read_properties()
         return self.properties
 
     def close(self, *exp):
         self.connection.close()
-
 
     """
     This part is not required

@@ -49,6 +49,9 @@ angular.module('MyApp', ['ngMaterial'])
     });
 
   }
+  $scope.is_number_property = function(property){
+    return property.type == 'number';
+  }
   $scope.update_outputs = function(selected_device){
     console.log($scope.outputs_value);
     for (output in $scope.outputs_value){

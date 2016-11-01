@@ -31,8 +31,8 @@ class Duck(Device):
         self.frequency = properties['frequency']
         self.points = properties['points']
         self.ramp_time = properties['ramp_time']
-        #self.connection = mock_connection(self.port, 115200) 
-        self.connection = DuckConnection(self.port, 115200)
+        self.connection = mock_connection(self.port, 115200) 
+        #self.connection = DuckConnection(self.port, 115200)
         self.connection.__enter__()
         self.outputs = [" ".join([i,j]) for i,j in product(['Port 0','Port 1', 'Port 2','Port 3'], ['AC','DC'])]
         if self.has_adc:

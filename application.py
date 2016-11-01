@@ -40,8 +40,9 @@ def update_property():
     try :
         request.get_data()
         device = find_device(request.json["name"])
-        for property, value in request.json['properties']:
-            device.object.set_property(property, value)
+        for property in request.json['properties']:
+            name, value = property['name'], property['value']
+            device.object.set_property(name, value)
     except Exception as e:
         return return_error(e)
     return done_response
