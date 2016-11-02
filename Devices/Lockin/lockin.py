@@ -22,8 +22,8 @@ class mock_connection:
 
 class Input(Enum):
     A = "A"
-    I = "I"
     A_MINUS_B = "A-B"
+    I = "I"
 
 class Sensitivity(Enum):
     nV_2_fA = '2 nV/fA'
@@ -214,7 +214,4 @@ class Lockin(Device):
     def phase(self):
         return self.read_input("phase")
 
-    @property
-    def nx(self):
-        return self.read_input("nx")
     

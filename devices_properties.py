@@ -6,14 +6,6 @@ from Devices.dmm.dmm import DMM
 
 devices = [
         {
-        "name" : "Example Device 1", 
-        "object" : ExampleDevice,
-        "properties" : {
-            "buad" : 1,
-            "communication_port" : "1",
-            } 
-        },
-        {
         "name" : "Lockin 1", 
         "object" : Lockin,
         "properties" : {

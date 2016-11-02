@@ -19,7 +19,7 @@ def run_operation(serial_device, op = "NOP", ver = False, read = True):
 
 class Duck:
     def __init__(self, *serial_device_parameters):
-        self.serial_device = Serial(*serial_device_parameters)
+        self.serial_device = Serial(*serial_device_parameters, timeout = .5)
         init_serial(self.serial_device)
 
     def __enter__(self):
