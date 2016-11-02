@@ -4,11 +4,15 @@ from time import sleep
 import pyvisa
 from enum import Enum
 
-verbose = True 
+verbose = False
 
 class IOType(Enum):
     Voltage = "VOLT"
     Current = "CURR"
+
+class OutputState(Enum):
+    On = "On"
+    Off = "Off"
 
 def identify_io_type(string):
     if "CURR" in string or "Current" in string:
@@ -18,40 +22,53 @@ def identify_io_type(string):
     else :
         raise Exception("Cannot interpret Source : {} from keithley".format(source))
 
+def identify_output_state(text):
+    if "1" in text:
+        return OutputState.On
+    elif "0" in text:
+        return OutputState.Off
+    raise Exception("Cannot identify output state {}".format(text))
+
 property_command_dictionary = {
     'Source' : ":SOUR:FUNC ",
     'Source Range' : None,
     'Sensor' : ":CONF:",
     'Sensor Range' : None,
-    'Sensor Protocol' : None
+    'Sensor Protocol' : None,
+    "Output" : None,
 }
 
-set_output_on_command = ":OUTP ON"
+set_output_command = ":OUTP {}"
 set_dcv_command = ":SOUR:VOLT:LEV {}"
 set_dcc_command = ":SOUR:CURR:LEV {}"
 class Keithley(Device):
     def __init__(self, properties):
         Device.__init__(self) 
         self.inputs = ["DCV","DCC"]
+        self.outputs = ["DCV","DCC"]
         self.port = properties['port']
         self.connection = pyvisa.ResourceManager().open_resource(self.port)
         #self.connection = mock_connection() #Mock connection for tests
-        self.outputs = ["DCV","DCC"]
+
         try :
+            self._reset()
             self.properties = self._read_properties()
-            self._set_output_on()
         except Exception as e:
             self.connection.close()
             raise(e)
 
-    def _set_output_on(self):
-        self.connection.write(set_output_on_command)
+
+    def _reset(self):
+        self.connection.write("*RST")
 
     def query(self, *args):
         if verbose:
             print("Query : {}".format(args))
-
-        res = self.connection.query(*args)
+        try :
+            res = self.connection.query(*args)
+        except Exception as e:
+            print("Cannot query {}".format(args))
+            raise e
 
         if verbose:
             print("Query Result : {}".format(res))
@@ -59,23 +76,30 @@ class Keithley(Device):
 
     def _read_properties(self):
         dictionary = {}
-        source = self.connection.query(":SOUR:FUNC?")
+        source = self.query(":SOUR:FUNC?")
         dictionary['Source']  = identify_io_type(source)
         dictionary['Source Range'] = self.query(":SOUR:{}:RANG?".format(dictionary['Source'].value))
-        sensor = self.connection.query(":SENS:FUNC?") 
+        sensor = self.query(":SENS:FUNC?") 
         dictionary['Sensor'] = identify_io_type(sensor)
         dictionary['Sensor Range'] = self.query(":SENS:{}:RANG?".format(dictionary['Source'].value))
         dictionary['Sensor Protocol'] = self.query(":SENS:{}:PROT?".format(dictionary['Source'].value))
+        dictionary['Output'] = identify_output_state(self.query(":OUTP?"))
         return dictionary 
 
-    def _init_source(self):
-        pass
 
-    def _init_sensor(self):
-        pass
+    def _init_sense(self, input_name):           
+
+        if input_name.upper() == 'DCV':
+            if self.properties['Sensor'] != IOType.Voltage:
+                self.set_property('Sensor', IOType.Voltage)
+        elif input_name.upper() == 'DCC':
+            if self.properties['Sensor'] != IOType.Current:
+                self.set_property('Sensor', IOType.Current)
+
+        self.set_property("Output", OutputState.Off)
 
     def check_connection(self):
-        return self.connection.query("*IDN?").startswith('KEITHLEY INSTRUMENTS INC')
+        assert self.connection.query("*IDN?").startswith('KEITHLEY INSTRUMENTS INC')
 
     def list_outputs(self):
         return self.outputs 
@@ -85,9 +109,10 @@ class Keithley(Device):
 
     def read_input(self, input_name):
         lower_case_inputs = [i.lower() for i in self.inputs]
-
+        
         if input_name.lower() in lower_case_inputs:
-            self._set_output_on()
+            self._init_sense(input_name)
+
             data = self.query(":READ?").split(',')
             if input_name.upper() == 'DCV':
                 return float(data[0])
@@ -96,8 +121,10 @@ class Keithley(Device):
         raise Exception("Trying to read from a non existing input : {}".format(input_name))
 
     def write_output(self, output_name, value):
+        if self.properties['Output'] != OutputState.On:
+            self.set_property("Output", OutputState.On)
+        
         lower_case_outputs = [i.lower() for i in self.outputs]
-
         if output_name.lower() in lower_case_outputs:
             if output_name.upper() == 'DCV':
                 self.connection.write(set_dcv_command.format(value))
@@ -130,6 +157,12 @@ class Keithley(Device):
             if value in IOType:
                 value = value.value
             command_to_write = "{}{}".format(property_command_dictionary[name], value)
+
+        if name == "Output":
+            if value in OutputState:
+                value = value.value
+            value = value.upper()
+            command_to_write = ":OUTP {}".format(value)
 
         if verbose:
             print("Updating Property : {}:{} with command '{}'".format(name, value, command_to_write))

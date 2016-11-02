@@ -1,5 +1,5 @@
 from serial import Serial
-
+from time import sleep
 def init_serial(serial_device):
     serial_device.flush()
     serial_device.reset_output_buffer()
@@ -30,7 +30,9 @@ class Duck:
         self.serial_device.__exit__(*exp)
 
     def run(self, op = "NOP", verbose = False, read = True):
+        sleep(.1)
         return run_operation(self.serial_device, op, verbose, read)
+
 
     def buffer_ramp(self, dac_channel, adc_channel,
                 begin_voltage, end_voltage, number_of_steps, 

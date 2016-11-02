@@ -123,7 +123,7 @@ property_command_dictionary = { "Input" : "ISRC",
 class Lockin(Device):
     def __init__(self, properties):
         Device.__init__(self) 
-        self.inputs = ["nx","x","y","r","phase"]
+        self.inputs = ["x","y","r","phase"]
         self.port = properties['port']
         self.connection = pyvisa.ResourceManager().open_resource(self.port)
         #self.connection = mock_connection() #Mock connection for tests

@@ -28,31 +28,7 @@ class devices(list):
             except Exception as e:
                 print("Cannot Close Device {} : {}".format(device.name, e))
 
-
-
-
-"""
-def devices():
-    devices = []
-    for device in _devices:
-        try :
-            physical_device = PhysicalDeviceObject(device)
-            devices.append(physical_device)
-        except Exception as e:
-            print("Cannot Initiate device {} : {}".format(device.get('name'), e))
-    global all_devices
-    all_devices = list(devices)
-    return devices
-
-def close_devices(*exp):
-    global all_devices
-    for device in _devices:
-        try:
-            device.object.close(*exp)
-            print("Closed Device : {}".format(device.name))
-        except Exception as e:
-            print("Cannot Close Device {} : {}".format(device.name, e))
-
-
-"""
-
+    def open(self):
+        self.__enter__()
+    def close(self):
+        self.__exit__(None)
