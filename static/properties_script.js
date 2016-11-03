@@ -6,7 +6,7 @@ angular.module('MyApp', ['ngMaterial'])
   }
 
   $scope.devices = [];
-  $scope.loading = 0;
+  $scope.loading = 1;
   $scope.outputs_value = [];
   $scope.show_alert = function(text){
       $mdDialog.show(
@@ -77,6 +77,7 @@ angular.module('MyApp', ['ngMaterial'])
   $http.get("/devices/").then(function(response){
       $scope.devices = response.data;
       console.log($scope.devices);
+      $scope.loading -= 1;
   });
   }]).config(function($mdThemingProvider) {
 

@@ -2,6 +2,7 @@ from Device import Device, get_enum_value_by_index, get_index_of_enum, list_valu
 from itertools import product
 from time import sleep
 import pyvisa
+from device_controller.GPIB_controller import GPIBDeviceConnection
 from enum import Enum
 
 verbose = False
@@ -68,8 +69,10 @@ class DMM(Device):
         self.inputs = ["DCV/DCC"]
         self.outputs = []
         self.port = properties['port']
-        self.connection = pyvisa.ResourceManager().open_resource(self.port)
+        #self.connection = pyvisa.ResourceManager().open_resource(self.port)
         #self.connection = mock_connection() #Mock connection for tests
+        self.connection = GPIBDeviceConnection(self.port)
+
 
         try :
             self.properties = self._read_properties()
