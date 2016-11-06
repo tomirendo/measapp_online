@@ -200,7 +200,7 @@ class Lockin(Device):
         self.connection.close()
 
     """
-    This part is not required
+    Not Required
 
     """
     @property

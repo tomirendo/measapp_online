@@ -3,6 +3,7 @@ from itertools import product
 from time import sleep
 import pyvisa
 from enum import Enum
+from numpy import log10, ceil
 
 verbose = False
 
@@ -14,13 +15,47 @@ class OutputState(Enum):
     On = "On"
     Off = "Off"
 
+class VoltageRange(Enum):
+    range_210V = "210 V"
+    range_21V = "21 V"
+    range_2100mv = "2.1 V"
+    range_210mv = "210 mV"
+
+def convert_voltage_range(range):
+    index = get_index_of_enum(VoltageRange(range))
+    result =  210 * (10**-index)
+    print(result)
+    return result
+
+class CurrentRange(Enum):
+    range_1_05A = "1.05 A"
+    range_105mA = "105 mA"
+    range_10_5mA = "10.5 mA"
+    range_1_05mA = "1.05 mA"
+    range_105_micro_A = "105 μA"
+    range_10_5_micro_A = "10.5 μA"
+    range_1_05_micro_A = "1.05 μA"
+
+def convert_current_range(range):
+    index = get_index_of_enum(CurrentRange(range))
+    return 1.05 * (10**-index)
+
+def convert_range(value, type):
+    if type == IOType.Current:
+        index = int(-ceil(log10(float(value)/1.05)))
+        return get_enum_value_by_index(CurrentRange, index)
+    elif type == IOType.Voltage:
+        index = int(-ceil(log10(float(value)/210)))
+        return get_enum_value_by_index(VoltageRange, index)
+    raise Exception("Cannot Identify range {} of type {}".format(value, type))
+
 def identify_io_type(string):
     if "CURR" in string or "Current" in string:
         return IOType.Current
     elif "VOLT" in string or "Voltage" in string :
         return IOType.Voltage
     else :
-        raise Exception("Cannot interpret Source : {} from keithley".format(source))
+        raise Exception("Cannot interpret Source : {} from Keithley".format(source))
 
 def identify_output_state(text):
     if "1" in text:
@@ -31,9 +66,11 @@ def identify_output_state(text):
 
 property_command_dictionary = {
     'Source' : ":SOUR:FUNC ",
-    'Source Range' : None,
+    'Source Voltage Range' : ':SOUR:VOLT:RANG ',
+    'Source Current Range' : ':SOUR:CURR:RANG ',
     'Sensor' : ":CONF:",
-    'Sensor Range' : None,
+    'Sensor Voltage Range' : ':SENS:VOLT:RANG ',
+    'Sensor Current Range' : ':SENS:CURR:RANG ',
     'Sensor Protocol' : None,
     "Output" : None,
 }
@@ -74,15 +111,17 @@ class Keithley(Device):
             print("Query Result : {}".format(res))
         return res
 
+
     def _read_properties(self):
         dictionary = {}
         source = self.query(":SOUR:FUNC?")
         dictionary['Source']  = identify_io_type(source)
-        dictionary['Source Range'] = self.query(":SOUR:{}:RANG?".format(dictionary['Source'].value))
+        dictionary['Source Voltage Range'] = convert_range(self.query(":SOUR:VOLT:RANG?"), IOType.Voltage)
+        dictionary['Source Current Range'] = convert_range(self.query(":SOUR:CURR:RANG?"), IOType.Current)
         sensor = self.query(":SENS:FUNC?") 
         dictionary['Sensor'] = identify_io_type(sensor)
-        dictionary['Sensor Range'] = self.query(":SENS:{}:RANG?".format(dictionary['Source'].value))
-        dictionary['Sensor Protocol'] = self.query(":SENS:{}:PROT?".format(dictionary['Source'].value))
+        dictionary['Sensor Voltage Range'] = convert_range(self.query(":SENS:VOLT:RANG?"), IOType.Voltage)
+        dictionary['Sensor Current Range'] = convert_range(self.query(":SENS:CURR:RANG?"), IOType.Current)
         dictionary['Output'] = identify_output_state(self.query(":OUTP?"))
         return dictionary 
 
@@ -154,28 +193,25 @@ class Keithley(Device):
         if name not in property_command_dictionary:
             raise Exception("Unknown property {}".format(name))
 
-
-        command_to_write = None
-
         if name in ['Source', 'Sensor']:
             if value in IOType:
                 value = value.value
             command_to_write = "{}{}".format(property_command_dictionary[name], value)
-
-        if name == "Output":
+        elif name == "Output":
             if value in OutputState:
                 value = value.value
             value = value.upper()
             command_to_write = ":OUTP {}".format(value)
+        elif 'Voltage' in name:
+            command_to_write = "{}{}".format(property_command_dictionary[name], convert_voltage_range(value))
+        elif 'Current' in name:
+            command_to_write = "{}{}".format(property_command_dictionary[name], convert_current_range(value))
 
         if verbose:
             print("Updating Property : {}:{} with command '{}'".format(name, value, command_to_write))
 
         if command_to_write is not None:
             self.connection.write(command_to_write)
-
-
-
 
     def get_properties(self):
         self.properties = self._read_properties()
