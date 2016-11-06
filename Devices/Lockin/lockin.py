@@ -1,8 +1,8 @@
-from Device import Device, get_enum_value_by_index, get_index_of_enum, list_values_of_enum_type
+from devices.Device import Device, get_enum_value_by_index, get_index_of_enum, list_values_of_enum_type
+from devices.device_controller.GPIB_controller import GPIBDeviceConnection
 from itertools import product
 from time import sleep
 import pyvisa
-from device_controller.GPIB_controller import GPIBDeviceConnection
 from enum import Enum
 from collections import OrderedDict
 

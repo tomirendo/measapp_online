@@ -1,4 +1,4 @@
-from Device import list_values_of_enum
+from devices.Device import list_values_of_enum
 class PhysicalDeviceObject:
     def __init__(self, dictionary):
         self.name = dictionary.get("name", "Noname")

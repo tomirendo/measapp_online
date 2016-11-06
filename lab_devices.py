@@ -1,4 +1,4 @@
-from devices_properties import devices as _devices
+from devices.devices_properties import devices as _devices
 devices_instance = None
 
 class devices(dict):

@@ -1,5 +1,5 @@
 import pyvisa
-from device_controller.prologix_connection import PrologixConnection
+from devices.device_controller.prologix_connection import PrologixConnection
 from enum import Enum
 
 class ConnectionType(Enum):

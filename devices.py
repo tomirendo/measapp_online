@@ -1,6 +1,6 @@
-from devices_properties import devices as _devices
+from devices.devices_properties import devices as _devices
 #Converts dictionary to objects
-from PhysicalDeviceObject import PhysicalDeviceObject
+from devices.PhysicalDeviceObject import PhysicalDeviceObject
 
 class devices(list):
     def __init__(self):

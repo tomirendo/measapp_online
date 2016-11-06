@@ -1,8 +1,8 @@
-from Devices.example_device import ExampleDevice
-from Devices.duck.duck import Duck
-from Devices.Lockin.lockin import Lockin
-from Devices.keithley.keithley import Keithley
-from Devices.dmm.dmm import DMM
+from devices.Devices.example_device import ExampleDevice
+from devices.Devices.duck.duck import Duck
+from devices.Devices.Lockin.lockin import Lockin
+from devices.Devices.keithley.keithley import Keithley
+from devices.Devices.dmm.dmm import DMM
 
 devices = [
         {

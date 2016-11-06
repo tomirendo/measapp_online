@@ -1,5 +1,5 @@
-from Device import Device
-from Devices.duck.myserial import Duck as DuckConnection
+from devices.Device import Device
+from devices.Devices.duck.myserial import Duck as DuckConnection
 from itertools import product
 from time import sleep
 

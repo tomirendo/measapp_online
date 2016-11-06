@@ -1,4 +1,4 @@
-from Device import Device, get_enum_value_by_index, get_index_of_enum, list_values_of_enum_type
+from devices.Device import Device, get_enum_value_by_index, get_index_of_enum, list_values_of_enum_type
 from itertools import product
 from time import sleep
 import pyvisa
