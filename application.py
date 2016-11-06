@@ -2,6 +2,7 @@
 import devices.devices as devices
 from devices.measurements import Measurement 
 from flask import Flask, render_template, request
+import webbrowser
 from json import dumps
 import threading
 
@@ -96,6 +97,8 @@ def stop_measurement(measurement_id):
 
 if __name__ == "__main__":
     try : 
+        import webbrowser
+        webbrowser.open("http://localhost:5000/static/index.html")
         app.run(use_reloader = False)
         devices.__exit__()
     except : 

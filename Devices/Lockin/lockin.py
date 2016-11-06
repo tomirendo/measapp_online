@@ -154,7 +154,7 @@ class Lockin(Device):
     def read_input(self, input_name):
         if input_name in self.inputs:
             input_index = self.inputs.index(input_name)
-            try : 
+            try :
                 result = self.connection.query("SNAP?1,2,3,4").replace("\n","").split(",")
             except TimeoutError:
                 result = self.connection.query("SNAP?1,2,3,4").replace("\n","").split(",")

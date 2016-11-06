@@ -34,6 +34,9 @@ class devices(dict):
             except Exception as e:
                 print("Cannot Close Device {} : {}".format(name, e))
 
+        global devices_instance
+        devices_instance = None
+
     def open(self):
         self.__enter__()
     def close(self):

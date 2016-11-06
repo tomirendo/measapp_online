@@ -102,7 +102,7 @@ class Duck(Device):
     """
 
     def get_ADC(self, port_number):
-        return self.read_input("ADC {}".format(int(number)))
+        return self.read_input("ADC {}".format(int(port_number)))
 
     def set_DC(self, port_number, value):
         self.write_output("Port {} DC".format(int(port_number)), value)

@@ -13,13 +13,25 @@
      <md-sidenav
         class="md-sidenav-left"
         md-component-id="left"
-        md-is-locked-open="$mdMedia('gt-md')"
+        md-is-locked-open="true"
         md-whiteframe="4">
+
+
 
       <md-toolbar md-theme="docs-dark" >
         <h1 class="md-toolbar-tools">MeasApp Online</h1>
       </md-toolbar>
       <md-content layout-padding >
+
+    <md-content layout="row">
+      <div layout='column' >
+        <md-button ng-click='open_window("http://localhost:5000/static/index.html")'> Measure </md-button>
+      </div>
+      <div layout='column' >
+        <md-button ng-click='open_window("http://localhost:5000/static/properties.html")'> Properties </md-button>
+      </div>
+
+      </md-content>
         
           <h2 layout="row">{{ measurement_data.name }}</h2>
           <md-button layout="row">Step Time: {{ measurement_data.step_time }}</md-button>
