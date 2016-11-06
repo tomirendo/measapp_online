@@ -1,8 +1,10 @@
 from devices.devices_properties import devices as _devices
+from collections import OrderedDict
 devices_instance = None
 
-class devices(dict):
+class devices(OrderedDict):
     def __init__(self):
+        OrderedDict.__init__(self)
         global devices_instance
         if devices_instance is not None:
             devices_instance.close()

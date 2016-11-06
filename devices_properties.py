@@ -19,6 +19,13 @@ devices = [
             "port" : "GPIB0::26::INSTR",
             } 
         },
+        {
+        "name" : "Keithley", 
+        "object" : Keithley,
+        "properties" : {
+            "port" : "GPIB0::27::INSTR",
+            } 
+        },
         {  
         "name" : "Duck",
         "object" : Duck,

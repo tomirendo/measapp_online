@@ -59,7 +59,7 @@
               <md-subheader class="md-no-sticky" flex>{{selected_device.name}} - Properties</md-subheader>
               <md-button class='md-primary' ng-click='update(selected_device)'>update device</md-button>
           </md-content>
-              <md-list-item  ng-repeat="property in selected_device.properties">
+              <md-list-item  ng-repeat="property in selected_device.properties | orderBy:'-name' ">
                 <p> {{ property.name }} </p>
                 <md-input-container class="md-secondary" > <input ng-show='is_number_property(property)' aria-label="INPUT" ng-model='property.value'>
                 </md-input-container>

@@ -88,7 +88,6 @@ class Keithley(Device):
 
 
     def _init_sense(self, input_name):           
-
         if input_name.upper() == 'DCV':
             if self.properties['Sensor'] != IOType.Voltage:
                 self.set_property('Sensor', IOType.Voltage)
@@ -96,10 +95,15 @@ class Keithley(Device):
             if self.properties['Sensor'] != IOType.Current:
                 self.set_property('Sensor', IOType.Current)
 
-        self.set_property("Output", OutputState.Off)
+    def _is_output_on(self):
+        return identify_output_state(self.query(":OUTP?")) == OutputState.On
+
+    def _output_on(self):
+        if not self._is_output_on():
+            self.set_property("Output", OutputState.On)
 
     def check_connection(self):
-        assert self.connection.query("*IDN?").startswith('KEITHLEY INSTRUMENTS INC')
+        return self.connection.query("*IDN?").startswith('KEITHLEY INSTRUMENTS INC')
 
     def list_outputs(self):
         return self.outputs 
@@ -112,6 +116,7 @@ class Keithley(Device):
         
         if input_name.lower() in lower_case_inputs:
             self._init_sense(input_name)
+            self._output_on()
 
             data = self.query(":READ?").split(',')
             if input_name.upper() == 'DCV':
@@ -121,8 +126,6 @@ class Keithley(Device):
         raise Exception("Trying to read from a non existing input : {}".format(input_name))
 
     def write_output(self, output_name, value):
-        if self.properties['Output'] != OutputState.On:
-            self.set_property("Output", OutputState.On)
         
         lower_case_outputs = [i.lower() for i in self.outputs]
         if output_name.lower() in lower_case_outputs:
@@ -134,6 +137,7 @@ class Keithley(Device):
                 raise Exception("Cannot find output {}".format(output_name))
         else :
             raise Exception("Cannot find output {}".format(output_name))
+        self._output_on()
 
     def write_raw(self, value):
         if isinstance(value, str):
