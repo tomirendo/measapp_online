@@ -1,4 +1,5 @@
-from Device import Device, get_enum_value_by_index, get_index_of_enum, list_values_of_enum_type
+from devices.Device import Device, get_enum_value_by_index, get_index_of_enum, list_values_of_enum_type
+from devices.device_controller.GPIB_controller import GPIBDeviceConnection
 from itertools import product
 from time import sleep
 import pyvisa
@@ -22,8 +23,8 @@ class mock_connection:
 
 class Input(Enum):
     A = "A"
-    I = "I"
     A_MINUS_B = "A-B"
+    I = "I"
 
 class Sensitivity(Enum):
     nV_2_fA = '2 nV/fA'
@@ -101,7 +102,6 @@ class Reserve(Enum):
     normal = "Normal"
     low_noise = "Low Noise"
 
-
 property_type_dictionary = { "Input" : Input,
                             "Sensitivity" : Sensitivity,
                             "Time Constant" : TimeConstant,
@@ -124,10 +124,11 @@ property_command_dictionary = { "Input" : "ISRC",
 class Lockin(Device):
     def __init__(self, properties):
         Device.__init__(self) 
-        self.inputs = ["nx","x","y","r","phase"]
+        self.inputs = ["x","y","r","phase"]
         self.port = properties['port']
-        self.connection = pyvisa.ResourceManager().open_resource(self.port)
+        #self.connection = pyvisa.ResourceManager().open_resource(self.port)
         #self.connection = mock_connection() #Mock connection for tests
+        self.connection = GPIBDeviceConnection(self.port)
         self.outputs = []
         self.properties = self._read_properties()
 
@@ -153,7 +154,10 @@ class Lockin(Device):
     def read_input(self, input_name):
         if input_name in self.inputs:
             input_index = self.inputs.index(input_name)
-            result = self.connection.query("SNAP?1,2,3,4").replace("\n","").split(",")
+            try :
+                result = self.connection.query("SNAP?1,2,3,4").replace("\n","").split(",")
+            except TimeoutError:
+                result = self.connection.query("SNAP?1,2,3,4").replace("\n","").split(",")
             return float(result[input_index])
         raise Exception("Trying to read from a non existing port")
 
@@ -196,7 +200,7 @@ class Lockin(Device):
         self.connection.close()
 
     """
-    This part is not required
+    Not Required
 
     """
     @property
@@ -215,7 +219,4 @@ class Lockin(Device):
     def phase(self):
         return self.read_input("phase")
 
-    @property
-    def nx(self):
-        return self.read_input("nx")
     

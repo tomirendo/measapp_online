@@ -9,7 +9,9 @@ angular.module('MyApp', ['chart.js','ngMaterial'])
         return arrays.map(function(array){return array[i]})
     });
 }
-
+  $scope.open_window = function (url){
+        window.open(url, "_blank");
+  }
 
   $scope.devices = [];
   $scope.loading = 0;

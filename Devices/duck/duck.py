@@ -1,5 +1,5 @@
-from Device import Device
-from Devices.duck.myserial import Duck as DuckConnection
+from devices.Device import Device
+from devices.Devices.duck.myserial import Duck as DuckConnection
 from itertools import product
 from time import sleep
 
@@ -31,8 +31,8 @@ class Duck(Device):
         self.frequency = properties['frequency']
         self.points = properties['points']
         self.ramp_time = properties['ramp_time']
-        self.connection = mock_connection(self.port, 115200) 
-        #self.connection = DuckConnection(self.port, 115200)
+        #self.connection = mock_connection(self.port, 115200) 
+        self.connection = DuckConnection(self.port, 115200)
         self.connection.__enter__()
         self.outputs = [" ".join([i,j]) for i,j in product(['Port 0','Port 1', 'Port 2','Port 3'], ['AC','DC'])]
         if self.has_adc:
@@ -47,11 +47,7 @@ class Duck(Device):
         return True
 
     def check_connection(self):
-        if self.ready:
-            return True
-        else :
-            self.ready = self._update_sine_function()
-            return self.ready
+        return self.ready
 
     def list_outputs(self):
         return self.outputs 
@@ -99,5 +95,44 @@ class Duck(Device):
 
     def close(self, *exp):
         self.connection.__exit__(*exp)
+
+
+    """ 
+        Not Required
+    """
+
+    def get_ADC(self, port_number):
+        return self.read_input("ADC {}".format(int(port_number)))
+
+    def set_DC(self, port_number, value):
+        self.write_output("Port {} DC".format(int(port_number)), value)
+
+    def set_AC(self, port_number, value):
+        self.write_output("Port {} AC".format(int(port_number)), value)
+
+    def set_ramp_rate(self, value):
+        self.set_property('Ramp Time (V/S)', value)
+
+    def set_frequency(self, value):
+        self.set_property('Frequency (Hz)', value)
+
+    def set_point_on_graph(self, value):
+        self.set_property('Points On Graph', value)
+
+    @property
+    def adc_0(self):
+        return self.get_ADC(0)
+    @property
+    def adc_1(self):
+        return self.get_ADC(1)
+    @property
+    def adc_2(self):
+        return self.get_ADC(2)
+    @property
+    def adc_3(self):
+        return self.get_ADC(3)
+
+
+
 
 

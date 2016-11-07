@@ -1,4 +1,4 @@
-from Device import Device
+from devices.Device import Device
 
 class ExampleDevice(Device):
     def __init__(self, properties):

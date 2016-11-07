@@ -4,7 +4,9 @@ angular.module('MyApp', ['ngMaterial'])
   $scope.remove = function(array, index){
     array.splice(index,1);
   }
-
+  $scope.open_window = function (url){
+        window.open(url, "_blank");
+  }
   $scope.show_alert = function(text){
       $mdDialog.show(
         $mdDialog.alert()
