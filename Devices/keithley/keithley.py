@@ -78,6 +78,7 @@ property_command_dictionary = {
 set_output_command = ":OUTP {}"
 set_dcv_command = ":SOUR:VOLT:LEV {}"
 set_dcc_command = ":SOUR:CURR:LEV {}"
+
 class Keithley(Device):
     def __init__(self, properties):
         Device.__init__(self) 
@@ -88,15 +89,10 @@ class Keithley(Device):
         #self.connection = mock_connection() #Mock connection for tests
 
         try :
-            self._reset()
             self.properties = self._read_properties()
         except Exception as e:
             self.connection.close()
             raise(e)
-
-
-    def _reset(self):
-        self.connection.write("*RST")
 
     def query(self, *args):
         if verbose:
@@ -154,26 +150,35 @@ class Keithley(Device):
         lower_case_inputs = [i.lower() for i in self.inputs]
         
         if input_name.lower() in lower_case_inputs:
-            self._init_sense(input_name)
-            self._output_on()
-
-            data = self.query(":READ?").split(',')
             if input_name.upper() == 'DCV':
-                return float(data[0])
+                if self.properties['Sensor'] == IOType.Voltage:
+                    return float(self.query(":READ?").split(',')[0])
+                else :
+                    raise Exception("Cannot read DCV - Sensor not in Voltage mode")
             elif input_name.upper() == 'DCC':
-                return float(data[1])
-        raise Exception("Trying to read from a non existing input : {}".format(input_name))
+                if self.properties['Sensor'] == IOType.Current:
+                    return float(self.query(":READ?").split(',')[1])
+                else :
+                    raise Exception("Cannot read DCC - Sensor not in Current mode")
+        else : 
+            raise Exception("Trying to read from a non existing input : {}".format(input_name))
 
     def write_output(self, output_name, value):
-        
         lower_case_outputs = [i.lower() for i in self.outputs]
+        
+
         if output_name.lower() in lower_case_outputs:
             if output_name.upper() == 'DCV':
-                self.connection.write(set_dcv_command.format(value))
-            elif output_name.upper() == 'DCC':
-                self.connection.write(set_dcc_command.format(value))
-            else :
-                raise Exception("Cannot find output {}".format(output_name))
+                if properties['Source'] == IOType.Voltage:
+                    self.connection.write(set_dcv_command.format(value))
+                else :
+                    raise Exception("Cannot write DCV - Source not in Voltage mode")
+
+            elif outputs_name.upper() == 'DCC':
+                if properties['Source'] == IOType.Current:
+                    self.connection.write(set_dcc_command.format(value))
+                else :
+                    raise Exception("Cannot write DCV - Source not in Voltage mode")
         else :
             raise Exception("Cannot find output {}".format(output_name))
         self._output_on()
@@ -212,7 +217,16 @@ class Keithley(Device):
 
         if command_to_write is not None:
             self.connection.write(command_to_write)
-
+"""
+    'Source' : ":SOUR:FUNC ",
+    'Source Voltage Range' : ':SOUR:VOLT:RANG ',
+    'Source Current Range' : ':SOUR:CURR:RANG ',
+    'Sensor' : ":CONF:",
+    'Sensor Voltage Range' : ':SENS:VOLT:RANG ',
+    'Sensor Current Range' : ':SENS:CURR:RANG ',
+    'Sensor Protocol' : None,
+    "Output" : None,
+"""
     def get_properties(self):
         self.properties = self._read_properties()
         return self.properties
