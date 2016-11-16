@@ -75,6 +75,7 @@ class DMM(Device):
         self.inputs = ["DCV/DCC"]
         self.outputs = []
         self.port = properties['port']
+        self._set_constants_access()
         #self.connection = pyvisa.ResourceManager().open_resource(self.port)
         #self.connection = mock_connection() #Mock connection for tests
         self.connection = GPIBDeviceConnection(self.port)
@@ -86,7 +87,10 @@ class DMM(Device):
             self.connection.close()
             raise(e)
 
-
+    def _set_constants_access(self):
+        self.IOType =  IOType
+        self.SensorRangeVolt = SensorRangeVolt
+        self.SensorRangeCurrent = SensorRangeCurrent
 
     def query(self, *args):
         if verbose:
@@ -185,6 +189,9 @@ class DMM(Device):
     """
         Not Required
     """
+    def read():
+        return self.current_value
+
     @property
     def current_value(self):
         return self.read_input("DCV/DCC")

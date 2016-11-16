@@ -27,6 +27,13 @@ devices = [
         #    } 
         #},
         {
+        "name" : "Lockin 2", 
+        "object" : Lockin,
+        "properties" : {
+            "port" : "GPIB0::8::INSTR",
+            } 
+        },
+        {
         "name" : "Keithley", 
         "object" : Keithley,
         "properties" : {
@@ -51,4 +58,15 @@ devices = [
         #    "ramp_time" : .1
         #    },
         #},
+        {  
+        "name" : "Display Duck",
+        "object" : Duck,
+        "properties":{
+            "port" : "COM12",
+            "has_adc" : False,
+            "frequency" : 17,
+            "points" : 80,
+            "ramp_time" : .1
+            },
+        },
 ]

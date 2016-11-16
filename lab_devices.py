@@ -39,6 +39,9 @@ class devices(OrderedDict):
         global devices_instance
         devices_instance = None
 
+    def __iter__(self):
+        return iter(self.values())
+
     def open(self):
         self.__enter__()
     def close(self):

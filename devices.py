@@ -31,8 +31,10 @@ class devices(list):
     def open(self):
         self.__enter__()
         return self
+
     def close(self):
         self.__exit__(None)
+
 
         
 

@@ -140,7 +140,15 @@ class Lockin(Device):
             value = get_enum_value_by_index(property_type_dictionary[property], index)
             dictionary[property] = value
         return dictionary
-
+    def _set_constants_access(self):
+        self.Input = Input
+        self.Sensitivity = Sensitivity
+        self.TimeConstant = TimeConstant
+        self.Slope = Slope
+        self.Coupling = Coupling
+        self.Ground = Ground
+        self.Filter = Filter
+        self.Reserve = Reserve
 
     def check_connection(self):
         return self.connection.query("*IDN?").startswith('Stanford_Research_Systems,SR830')

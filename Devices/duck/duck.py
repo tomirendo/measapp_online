@@ -101,7 +101,7 @@ class Duck(Device):
         Not Required
     """
 
-    def get_ADC(self, port_number):
+    def read_ADC(self, port_number):
         return self.read_input("ADC {}".format(int(port_number)))
 
     def set_DC(self, port_number, value):
@@ -121,16 +121,16 @@ class Duck(Device):
 
     @property
     def adc_0(self):
-        return self.get_ADC(0)
+        return self.read_ADC(0)
     @property
     def adc_1(self):
-        return self.get_ADC(1)
+        return self.read_ADC(1)
     @property
     def adc_2(self):
-        return self.get_ADC(2)
+        return self.read_ADC(2)
     @property
     def adc_3(self):
-        return self.get_ADC(3)
+        return self.read_ADC(3)
 
 
 

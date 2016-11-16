@@ -85,6 +85,7 @@ class Keithley(Device):
         self.outputs = ["DCV","DCC"]
         self.port = properties['port']
         self.connection = pyvisa.ResourceManager().open_resource(self.port)
+        self._set_constants_access()
         #self.connection = mock_connection() #Mock connection for tests
 
         try :
@@ -92,6 +93,12 @@ class Keithley(Device):
         except Exception as e:
             self.connection.close()
             raise(e)
+
+    def _set_constants_access(self):
+        self.IOType = IOType
+        self.OutputState = OutputState
+        self.VoltageRange = VoltageRange
+        self.CurrentRange = CurrentRange
 
     def query(self, *args):
         if verbose:
@@ -242,6 +249,7 @@ class Keithley(Device):
 
 
     """ Not Required """
+
     def set_properties(self, properties_dictionary):
         """
         Overriding set_properties of the standart Device object described in Device.py 
