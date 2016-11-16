@@ -4,6 +4,7 @@ from time import sleep
 import pyvisa
 from devices.device_controller.GPIB_controller import GPIBDeviceConnection
 from enum import Enum
+from math import log10
 
 verbose = False
 
@@ -48,6 +49,11 @@ def identify_sensor_range_volt(string):
         10 : SensorRangeVolt.range_100mV,
     }
     return volt_dict[int(float(string)*100)]
+def find_major_digit(number):
+    log_of_range = int(log10(number))
+    if log_of_range:
+        return number - number % 10**log_of_range
+    return int(number)
 
 def identify_sensor_range_curr(string):
     curr_dict = {
@@ -56,7 +62,7 @@ def identify_sensor_range_curr(string):
         10 :  SensorRangeCurrent.range_100mA,
         1 : SensorRangeCurrent.range_10mA,
     }
-    return curr_dict[int(float(string)*100)]
+    return curr_dict[find_major_digit(int(float(string)*100))]
 
 property_command_dictionary = {
     'Sense' : ":SENSE:FUNC",
@@ -119,7 +125,7 @@ class DMM(Device):
 
     def read_input(self, input_name):
         lower_case_inputs = [i.lower() for i in self.inputs]
-        
+         
         if input_name.lower() in lower_case_inputs:
             return float(self.query(":DATA:FRES?"))
         raise Exception("Trying to read from a non existing input : {}".format(input_name))

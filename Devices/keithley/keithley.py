@@ -24,7 +24,6 @@ class VoltageRange(Enum):
 def convert_voltage_range(range):
     index = get_index_of_enum(VoltageRange(range))
     result =  210 * (10**-index)
-    print(result)
     return result
 
 class CurrentRange(Enum):
@@ -70,8 +69,8 @@ property_command_dictionary = {
     'Source Current Range' : ':SOUR:CURR:RANG ',
     'Sensor' : ":CONF:",
     'Sensor Voltage Range' : ':SENS:VOLT:RANG ',
-    'Sensor Current Range' : ':SENS:CURR:RANG ',
-    'Sensor Protocol' : None,
+    'Sensor Protection Voltage' : None,
+    'Sensor Protection Current' : None,
     "Output" : None,
 }
 
@@ -117,8 +116,9 @@ class Keithley(Device):
         sensor = self.query(":SENS:FUNC?") 
         dictionary['Sensor'] = identify_io_type(sensor)
         dictionary['Sensor Voltage Range'] = convert_range(self.query(":SENS:VOLT:RANG?"), IOType.Voltage)
-        dictionary['Sensor Current Range'] = convert_range(self.query(":SENS:CURR:RANG?"), IOType.Current)
         dictionary['Output'] = identify_output_state(self.query(":OUTP?"))
+        dictionary['Sensor Protection Voltage'] = float(self.query("SENS:VOLT:PROT?"))
+        dictionary['Sensor Protection Current'] = float(self.query("SENS:CURR:PROT?"))
         return dictionary 
 
 
@@ -151,15 +151,9 @@ class Keithley(Device):
         
         if input_name.lower() in lower_case_inputs:
             if input_name.upper() == 'DCV':
-                if self.properties['Sensor'] == IOType.Voltage:
-                    return float(self.query(":READ?").split(',')[0])
-                else :
-                    raise Exception("Cannot read DCV - Sensor not in Voltage mode")
+                return float(self.query(":READ?").split(',')[0])
             elif input_name.upper() == 'DCC':
-                if self.properties['Sensor'] == IOType.Current:
-                    return float(self.query(":READ?").split(',')[1])
-                else :
-                    raise Exception("Cannot read DCC - Sensor not in Current mode")
+                return float(self.query(":READ?").split(',')[1])
         else : 
             raise Exception("Trying to read from a non existing input : {}".format(input_name))
 
@@ -169,16 +163,16 @@ class Keithley(Device):
 
         if output_name.lower() in lower_case_outputs:
             if output_name.upper() == 'DCV':
-                if properties['Source'] == IOType.Voltage:
+                if self.properties['Source'] == IOType.Voltage:
                     self.connection.write(set_dcv_command.format(value))
                 else :
                     raise Exception("Cannot write DCV - Source not in Voltage mode")
 
-            elif outputs_name.upper() == 'DCC':
-                if properties['Source'] == IOType.Current:
+            elif output_name.upper() == 'DCC':
+                if self.properties['Source'] == IOType.Current:
                     self.connection.write(set_dcc_command.format(value))
                 else :
-                    raise Exception("Cannot write DCV - Source not in Voltage mode")
+                    raise Exception("Cannot write DCC - Source not in Current mode")
         else :
             raise Exception("Cannot find output {}".format(output_name))
         self._output_on()
@@ -194,7 +188,7 @@ class Keithley(Device):
     def read_raw(self):
         return self.connection.read_raw()
 
-    def set_property(self, name, value):
+    def set_property(self, name, value, reload_properties = True):
         if name not in property_command_dictionary:
             raise Exception("Unknown property {}".format(name))
 
@@ -207,6 +201,13 @@ class Keithley(Device):
                 value = value.value
             value = value.upper()
             command_to_write = ":OUTP {}".format(value)
+
+        elif name == 'Sensor Protection Voltage':
+            command_to_write = "SENS:VOLT:PROT {}".format(value)
+
+        elif name == 'Sensor Protection Current':
+            command_to_write = "SENS:CURR:PROT {}".format(value)
+
         elif 'Voltage' in name:
             command_to_write = "{}{}".format(property_command_dictionary[name], convert_voltage_range(value))
         elif 'Current' in name:
@@ -217,16 +218,18 @@ class Keithley(Device):
 
         if command_to_write is not None:
             self.connection.write(command_to_write)
-"""
-    'Source' : ":SOUR:FUNC ",
-    'Source Voltage Range' : ':SOUR:VOLT:RANG ',
-    'Source Current Range' : ':SOUR:CURR:RANG ',
-    'Sensor' : ":CONF:",
-    'Sensor Voltage Range' : ':SENS:VOLT:RANG ',
-    'Sensor Current Range' : ':SENS:CURR:RANG ',
-    'Sensor Protocol' : None,
-    "Output" : None,
-"""
+            if reload_properties:
+                self.get_properties()
+        """
+            'Source' : ":SOUR:FUNC ",
+            'Source Voltage Range' : ':SOUR:VOLT:RANG ',
+            'Source Current Range' : ':SOUR:CURR:RANG ',
+            'Sensor' : ":CONF:",
+            'Sensor Voltage Range' : ':SENS:VOLT:RANG ',
+            'Sensor Current Range' : ':SENS:CURR:RANG ',
+            'Sensor Protocol' : None,
+            "Output" : None,
+        """
     def get_properties(self):
         self.properties = self._read_properties()
         return self.properties
@@ -235,6 +238,54 @@ class Keithley(Device):
         self.connection.close()
         if verbose:
             print("Close Connection to Keithley")
+
+
+
+    """ Not Required """
+    def set_properties(self, properties_dictionary):
+        """
+        Overriding set_properties of the standart Device object described in Device.py 
+        by overwriting this I can controll the order of updating properties
+        """
+        ordered_properties = ['Sensor Protection Current','Sensor Protection Voltage' ,
+        'Source' ,'Source Voltage Range', 'Source Current Range','Sensor' ,
+        'Sensor Voltage Range',"Output" ]
+        for key in ordered_properties:
+            print("Updating ",format(key))
+            self.set_property(key, properties_dictionary[key], reload_properties=True)
+
+        self.get_properties()
+
+
+    def set_output_voltage(self):
+        self.set_property("Source",IOType.Voltage)
+
+    def set_output_current(self):
+        self.set_property("Source",IOType.Current)
+
+    def set_input_voltage(self):
+        self.set_property("Sensor",IOType.Voltage)
+
+    def set_input_current(self):
+        self.set_property("Sensor",IOType.Current)
+
+    def set_current(self, value):
+        self.write_output("DCC", value)
+
+    def set_voltage(self, value):
+        self.write_output("DCV", value)
+
+    def read_voltage(self):
+        return self.read_input("DCV")
+
+    def read_current(self):
+        return self.read_input("DCC")
+ 
+    def read(self):
+        if self.properties['Sensor'] == IOType.Current:
+            return self.read_current()
+        elif self.properties['Sensor'] == IOType.Voltage:
+            return self.read_voltage()
 
 
     

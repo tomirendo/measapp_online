@@ -1,5 +1,12 @@
 class Device:
-    pass
+    def set_properties(self, property_dictionary):
+    	"""
+    		You can override this property in order to manage 
+    		the order properties are being updated.
+    	"""
+    	for key, value in property_dictionary.items():
+    		self.set_property(key, value)
+
 
 def get_index_of_enum(value):
     return list(type(value).__members__.values()).index(value)
