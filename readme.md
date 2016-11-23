@@ -68,27 +68,37 @@ The device.list_inputs() method returns a list of stringing representing all the
     def list_inputs(self):
         return ['ADC 1', 'ADC 2']
 
+device.list_outputs() returns a list of strings representing all of the available outputs of the device.
+
     def list_outputs(self):
         return ['Port 1', 'Port 2']
+
+device.read_input() reads the current value of a given input by name. You can find all the available inputs using the device.list_inputs() function.
 
     def read_input(self, input_name):
         return 1
 
+device.write_output(output_name, value) sets the value of an output. You can find all the available outpus using the device.list_outputs() methods.
+
     def write_output(self, output_name, value):
-        print("Output {} : {}".format(output_name, value))
+
+Write raw string to a device.
 
     def write_raw(self, value):
-        print("Raw Output {}".format(value))
+
+Read raw string for a device
 
     def read_raw(self):
-        print("Read Raw")
-        return "Read Raw\n" 
+
+Set a value to a property. Properties can either by a number, a string or an Enum. 
 
     def set_property(self, name, value):
-        pass
+
+Returns a dictionary representing the properties of the device.
 
     def get_properties(self):
-        return dict()
+
+Close connection to a device.
 
     def close(self, *exp):
-        print("Closed")
+
