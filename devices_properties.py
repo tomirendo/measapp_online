@@ -26,6 +26,11 @@ devices = [
         #    "port" : "GPIB0::27::INSTR",
         #    } 
         #},
+        #{ "name" : "Example Device",
+        #  "object" : ExampleDevice,
+        #  "properties" : {
+        #  }
+        #},
         {
         "name" : "Lockin 2", 
         "object" : Lockin,
@@ -47,19 +52,19 @@ devices = [
             "port" : "GPIB0::16::INSTR",
             } 
         },
-        #{  
-        #"name" : "Duck",
-        #"object" : Duck,
-        #"properties":{
-        #    "port" : "COM6",
-        #    "has_adc" : True,
-        #    "frequency" : 17,
-        #    "points" : 80,
-        #    "ramp_time" : .1
-        #    },
-        #},
         {  
-        "name" : "Display Duck",
+        "name" : "Duck (with ADC)",
+        "object" : Duck,
+        "properties":{
+            "port" : "COM6",
+            "has_adc" : True,
+            "frequency" : 17,
+            "points" : 80,
+            "ramp_time" : .1
+            },
+        },
+        {  
+        "name" : "Duck (with display)",
         "object" : Duck,
         "properties":{
             "port" : "COM12",
