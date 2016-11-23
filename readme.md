@@ -29,9 +29,9 @@ Alternativly:
 
 
 
-### Structure
+## Structure
 
-#### Accessing a device
+### Accessing a device
 
 The devs object is an ordered dictionary of device objects. For example you my run:
 
@@ -51,13 +51,11 @@ Since this is an ordered dictionary you can quickly assign all of the devices to
 From this point on I would write "dmm.property" assuming the variable "dmm" contains a dmm object from the devs dictionary.
 
 
-#### Standard Functionality 
+### Standard Functionality 
 
 Every single device implements a set of standard functions. These standard functions should enable all the device functionality, but are a bit tedious to actually use. The standard functions enable a standard access for external objects to the devices library. 
 
     def __init__(self, properties):
-        Device.__init__(self) 
-        self.connection = None
 
 The device.check_connection() method checks the identity of the connected device, and returns True if the device is properly connected.
 
@@ -66,17 +64,14 @@ The device.check_connection() method checks the identity of the connected device
 The device.list_inputs() method returns a list of stringing representing all the inputs of the device. You can access their current value using the device.read_input(input_name) method.
 
     def list_inputs(self):
-        return ['ADC 1', 'ADC 2']
 
 device.list_outputs() returns a list of strings representing all of the available outputs of the device.
 
     def list_outputs(self):
-        return ['Port 1', 'Port 2']
 
 device.read_input() reads the current value of a given input by name. You can find all the available inputs using the device.list_inputs() function.
 
     def read_input(self, input_name):
-        return 1
 
 device.write_output(output_name, value) sets the value of an output. You can find all the available outpus using the device.list_outputs() methods.
 
