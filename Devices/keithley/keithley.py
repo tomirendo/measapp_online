@@ -89,7 +89,7 @@ class Keithley(Device):
         #self.connection = mock_connection() #Mock connection for tests
 
         try :
-            self.properties = self._read_properties()
+            self._properties = self._read_properties()
         except Exception as e:
             self.connection.close()
             raise(e)
@@ -131,10 +131,10 @@ class Keithley(Device):
 
     def _init_sense(self, input_name):           
         if input_name.upper() == 'DCV':
-            if self.properties['Sensor'] != IOType.Voltage:
+            if self._properties['Sensor'] != IOType.Voltage:
                 self.set_property('Sensor', IOType.Voltage)
         elif input_name.upper() == 'DCC':
-            if self.properties['Sensor'] != IOType.Current:
+            if self._properties['Sensor'] != IOType.Current:
                 self.set_property('Sensor', IOType.Current)
 
     def _is_output_on(self):
@@ -170,13 +170,13 @@ class Keithley(Device):
 
         if output_name.lower() in lower_case_outputs:
             if output_name.upper() == 'DCV':
-                if self.properties['Source'] == IOType.Voltage:
+                if self._properties['Source'] == IOType.Voltage:
                     self.connection.write(set_dcv_command.format(value))
                 else :
                     raise Exception("Cannot write DCV - Source not in Voltage mode")
 
             elif output_name.upper() == 'DCC':
-                if self.properties['Source'] == IOType.Current:
+                if self._properties['Source'] == IOType.Current:
                     self.connection.write(set_dcc_command.format(value))
                 else :
                     raise Exception("Cannot write DCC - Source not in Current mode")
@@ -238,8 +238,8 @@ class Keithley(Device):
             "Output" : None,
         """
     def get_properties(self):
-        self.properties = self._read_properties()
-        return self.properties
+        self._properties = self._read_properties()
+        return self._properties
 
     def close(self, *exp):
         self.connection.close()
@@ -290,9 +290,9 @@ class Keithley(Device):
         return self.read_input("DCC")
  
     def read(self):
-        if self.properties['Sensor'] == IOType.Current:
+        if self._properties['Sensor'] == IOType.Current:
             return self.read_current()
-        elif self.properties['Sensor'] == IOType.Voltage:
+        elif self._properties['Sensor'] == IOType.Voltage:
             return self.read_voltage()
 
 

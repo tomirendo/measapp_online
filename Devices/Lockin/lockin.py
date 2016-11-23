@@ -130,7 +130,7 @@ class Lockin(Device):
         #self.connection = mock_connection() #Mock connection for tests
         self.connection = GPIBDeviceConnection(self.port)
         self.outputs = []
-        self.properties = self._read_properties()
+        self._properties = self._read_properties()
 
     def _read_properties(self):
         dictionary = OrderedDict()
@@ -192,7 +192,7 @@ class Lockin(Device):
             value = property_type_dictionary[name](value)
 
         if value in property_type_dictionary[name]:
-            self.properties[name] = value
+            self._properties[name] = value
             text_to_write = "{} {}".format(property_command_dictionary[name], get_index_of_enum(value))
             print(text_to_write)
             self.connection.write(text_to_write)
@@ -201,8 +201,8 @@ class Lockin(Device):
 
 
     def get_properties(self):
-        self.properties = self._read_properties()
-        return self.properties
+        self._properties = self._read_properties()
+        return self._properties
 
     def close(self, *exp):
         self.connection.close()

@@ -39,7 +39,7 @@ class Duck(Device):
             self.inputs = ['ADC 0','ADC 1', 'ADC 2','ADC 3']
         else :
             self.inputs = []
-        self.properties = ['Frequency (Hz)','Points On Graph','Ramp Time (V/S)']
+        self._properties = ['Frequency (Hz)','Points On Graph','Ramp Time (V/S)']
         self.ready = self._update_sine_function()
 
     def _update_sine_function(self):
@@ -77,12 +77,12 @@ class Duck(Device):
 
     def set_property(self, name, value):
         begin_data = self.frequency, self.points, self.ramp_time 
-        if name in self.properties:
-            if name == self.properties[0]: 
+        if name in self._properties:
+            if name == self._properties[0]: 
                 self.frequency = float(value)
-            elif name == self.properties[1]:
+            elif name == self._properties[1]:
                 self.points = int(value)
-            elif name == self.properties[2]: 
+            elif name == self._properties[2]: 
                 self.ramp_time = float(value)
 
             if begin_data != (self.frequency, self.points, self.ramp_time):
@@ -91,7 +91,7 @@ class Duck(Device):
             raise Exception("Unknown Property to set")
 
     def get_properties(self):
-        return dict(zip(self.properties, [self.frequency, self.points, self.ramp_time]))
+        return dict(zip(self._properties, [self.frequency, self.points, self.ramp_time]))
 
     def close(self, *exp):
         self.connection.__exit__(*exp)

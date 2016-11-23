@@ -82,7 +82,7 @@ class DMM(Device):
 
 
         try :
-            self.properties = self._read_properties()
+            self._properties = self._read_properties()
         except Exception as e:
             self.connection.close()
             raise(e)
@@ -177,8 +177,8 @@ class DMM(Device):
         self.get_properties()
 
     def get_properties(self):
-        self.properties = self._read_properties()
-        return self.properties
+        self._properties = self._read_properties()
+        return self._properties
 
     def close(self, *exp):
         self.connection.close()
@@ -189,7 +189,7 @@ class DMM(Device):
     """
         Not Required
     """
-    def read():
+    def read(self):
         return self.current_value
 
     @property
@@ -201,6 +201,21 @@ class DMM(Device):
 
     def set_DCI(self):
         self.set_property("Sense", IOType.Current)
+
+    def set_DCV_range(self, range):
+        """
+            Example : 
+                    dmm.set_DCV_range(dmm.SensorRangeVolt.range_10V)
+        """
+        self.set_property("Sense Range Voltage", range)
+
+    def set_DCI_range(self, range):
+        """
+            Example : 
+                    dmm.set_DCI_range(dmm.SensorRangeCurrent.range_1A)
+        """
+        self.set_property("Sense Range Current", range)
+
 
     #def set_range_by_max_value()
 
