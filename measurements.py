@@ -1,5 +1,8 @@
 import numpy 
+import os
+import csv
 from time import sleep
+
 
 class Output:
     def __init__(self, dictionary, device_finder = lambda x:x):
@@ -33,7 +36,7 @@ class Input:
                 "device": self.device.name}
 
 class Measurement:
-    def __init__(self, dictionary, device_finder=lambda x:x):
+    def __init__(self, dictionary, device_finder=lambda x:x, path="."):
         self.name = dictionary['name']
         self.step_time = float(dictionary['step_time'])
         self.inputs = [Input(i, device_finder) for i in dictionary['measurements']]
@@ -41,6 +44,7 @@ class Measurement:
         self.running = False
         self.results = []
         self.range = []
+        self.path = path
         for output in self.outputs:
             if output.device.is_locked and output.device.owner != id(self):
                 raise Exception("Cannot use output device {}. Device is used by another measurement".format(output.device.name))
@@ -52,21 +56,39 @@ class Measurement:
             if id(self) == output.device.owner :
                 output.device.is_locked = False
 
+    def save_measurement(self, exception = False):
+        if exception: 
+            filename = self.name + ".error.csv"
+        else :
+            filename = self.name + ".csv"
+
+        full_path = os.path.join(self.path, filename)
+
+        with open(full_path, "w") as f:
+            writer = csv.writer(f)
+            writer.writerows(self.results)
+
     def run(self):
-        self.running = True
-        if len(self.outputs) != 1:
-            raise Exception("Not ready yet")
-        output = self.outputs[0]
-        self.range = numpy.linspace(float(output.begin_value), float(output.end_value), int(output.steps))
-        self.results = [(None,) * (1+len(self.inputs))]*output.steps
-        for index, value in enumerate(self.range):
-            if self.running: #self.running value can change while this is running to stop the measurement
-                output.set(value)
-                sleep(self.step_time)
-                self.results[index] = [value] + [i.get() for i in self.inputs]
-                print(self.results[index])
-        self.running = False
-        self.end_measurement()
+        try : 
+            self.running = True
+            if len(self.outputs) != 1:
+                raise Exception("Not ready yet")
+            output = self.outputs[0]
+            self.range = numpy.linspace(float(output.begin_value), float(output.end_value), int(output.steps))
+            self.results = [(None,) * (1+len(self.inputs))]*output.steps
+            for index, value in enumerate(self.range):
+                if self.running: #self.running value can change while this is running to stop the measurement
+                    output.set(value)
+                    sleep(self.step_time)
+                    self.results[index] = [value] + [i.get() for i in self.inputs]
+                    self.save_measurement()
+                    print(self.results[index])
+            self.running = False
+            self.end_measurement()
+
+        except Exception as e:
+            self.save_measurement(exception = True)
+            print("Stoped measurement : {}\nBecause of an Error:{}\n".format(self.name, e))
 
     def to_dict(self):
         return {"running" : self.running,

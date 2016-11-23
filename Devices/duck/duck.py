@@ -102,21 +102,39 @@ class Duck(Device):
     """
 
     def read_ADC(self, port_number):
+        """
+            Read adc voltage by port number.
+        """
         return self.read_input("ADC {}".format(int(port_number)))
 
     def set_DC(self, port_number, value):
+        """
+            Set the DC voltage of a port.
+        """
         self.write_output("Port {} DC".format(int(port_number)), value)
 
     def set_AC(self, port_number, value):
+        """
+            Set the AC voltage (RMS) of a port.
+        """
         self.write_output("Port {} AC".format(int(port_number)), value)
 
     def set_ramp_rate(self, value):
+        """
+            Set the ramp rate in voltage per second.
+        """
         self.set_property('Ramp Time (V/S)', value)
 
     def set_frequency(self, value):
+        """
+            Set the frequency of AC signal. 
+        """
         self.set_property('Frequency (Hz)', value)
 
     def set_point_on_graph(self, value):
+        """
+            Set the number of discreat points that represent a sine wave.
+        """
         self.set_property('Points On Graph', value)
 
     @property

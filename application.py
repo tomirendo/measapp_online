@@ -2,8 +2,8 @@
 import devices.devices as devices
 from devices.measurements import Measurement 
 from flask import Flask, render_template, request
-import webbrowser
 from json import dumps
+import webbrowser
 import threading
 
 

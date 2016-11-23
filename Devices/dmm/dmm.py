@@ -190,6 +190,9 @@ class DMM(Device):
         Not Required
     """
     def read(self):
+        """
+            Read current measured value (Current or Voltage)
+        """
         return self.current_value
 
     @property
@@ -197,13 +200,20 @@ class DMM(Device):
         return self.read_input("DCV/DCC")
 
     def set_DCV(self):
+        """
+            Set measured value to Voltage
+        """
         self.set_property("Sense", IOType.Voltage)
 
     def set_DCI(self):
+        """
+            Set measured value to Current
+        """
         self.set_property("Sense", IOType.Current)
 
     def set_DCV_range(self, range):
         """
+            Sets the voltage measuring range.
             Example : 
                     dmm.set_DCV_range(dmm.SensorRangeVolt.range_10V)
         """
@@ -211,13 +221,8 @@ class DMM(Device):
 
     def set_DCI_range(self, range):
         """
+            Sets the current measuring range.
             Example : 
                     dmm.set_DCI_range(dmm.SensorRangeCurrent.range_1A)
         """
-        self.set_property("Sense Range Current", range)
-
-
-    #def set_range_by_max_value()
-
-
-    
+        self.set_property("Sense Range Current", range)    
