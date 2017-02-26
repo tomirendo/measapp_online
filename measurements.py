@@ -2,7 +2,7 @@ import numpy
 import os
 import csv
 from time import sleep
-
+import matplotlib.pyplot as plt
 
 class Output:
     def __init__(self, dictionary, device_finder = lambda x:x):
@@ -100,3 +100,10 @@ class Measurement:
                 "range" : list(self.range)
                 }
 
+    def to_graph(self, input_index, to_differentiate = False):
+        X, *Ys = zip(*self.results)
+        plt.plot(X, Ys[input_index])
+        file_name = "temp_{}_{}.png".format(id(self), input_index)
+        plt.savefig(file_name)
+        plt.clf()
+        return os.path.abspath(file_name)

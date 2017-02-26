@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3.5
 import devices.devices as devices
 from devices.measurements import Measurement 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from json import dumps
 import webbrowser
 import threading
@@ -75,12 +75,26 @@ def measure():
 def get_measurement(measurement_id):
     try:
         if measurement_id not in map(id, measurements):
-            raise exception("Cannot find measurement")
+            raise Exception("Cannot find measurement")
         for measurement in measurements:
             if id(measurement) == int(measurement_id):
                 return return_response(measurement.to_dict())
     except Exception as e:
         return return_error(e)
+
+@app.route("/graph_measurement/<int:measurement_id>/<int:input_index>/")
+def graph_measurement(measurement_id, input_index):
+    try:
+        if measurement_id not in map(id, measurements):
+            raise Exception("Cannot find measurement")
+        for measurement in measurements:
+            if id(measurement) == int(measurement_id):
+                file_name = measurement.to_graph(input_index)
+                return send_file(file_name, mimetype='image/png')
+    except Exception as e:
+        return return_error(e)
+
+
 
 @app.route("/stop_measurement/<int:measurement_id>/")
 def stop_measurement(measurement_id):
@@ -93,6 +107,7 @@ def stop_measurement(measurement_id):
                 return return_response({"Stopped" : True})
     except Exception as e:
         return return_error(e)
+
 
 if __name__ == "__main__":
     try : 

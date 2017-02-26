@@ -9,12 +9,12 @@
     </head>
     <body ng-app='MyApp' ng-controller='AppCtrl' >
 
-<section layout="row" flex>
+<section layout="row" flex >
      <md-sidenav
         class="md-sidenav-left"
         md-component-id="left"
         md-is-locked-open="true"
-        md-whiteframe="4">
+        md-whiteframe="4" style="overflow: hidden;">
 
 
 
@@ -38,16 +38,63 @@
           <md-button layout="row" class='md-warn' ng-show='measurement_data.running'> Running </md-button>
           <md-button layout="row" class='md-raised md-warn' ng-show='measurement_data.running' ng-click='stop_measurement()'> Stop Measurement </md-button>
 
+          <md-select ng-model="new_input_name" aria-label="select_input">
+              <md-option ng-repeat="input in series" value={{input}} class='md-warn'>
+                {{input}}
+              </md-option>
+            </md-select>
+          <md-button ng-click="add_graph();" class='md-primary md-raised'> Add Graph</md-button>
+
       <md-progress-linear md-mode="indeterminate" ng-show="loading" ></md-progress-linear>
       </md-content>
 
   </md-sidenav>
 
     <md-content class='md-whiteframe-1dp' flex layout-padding >
-  <canvas id="line" class="chart chart-line" chart-data="data"
-chart-labels="labels" chart-series="series" chart-options="options"
- >
-</canvas> 
+
+
+
+                <md-grid-list
+        md-cols-xs="1" md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6"
+        md-row-height-gt-md="1:1" md-row-height="2:1"
+        md-gutter="12px" md-gutter-gt-sm="8px"  >
+
+<!-- 
+    <md-grid-tile md-rowspan="2"
+                  md-colspan="2"
+                  md-colspan-sm="1"
+                  md-rowspan-sm="1"
+                  md-colspan-xs="1"
+                  md-rowspan-xs="1"
+                  ng-class="tile.background" >
+      <md-icon md-svg-icon=""></md-icon>
+                  <canvas id="line" class="chart chart-line" chart-data="data"
+          chart-labels="labels" chart-series="series" chart-options="options">
+          </canvas> 
+    </md-grid-tile> -->
+
+
+
+    <md-grid-tile ng-repeat="graph in graphs" md-rowspan="2"
+                  md-colspan="2"
+                  md-colspan-sm="1"
+                  md-rowspan-sm="1"
+                  md-colspan-xs="1"
+                  md-rowspan-xs="1"
+                  ng-class="tile.background" >
+      <md-icon md-svg-icon=""></md-icon>
+                  <img ng-src='/graph_measurement/{{measurement_id}}/{{graph.graph_input_index}}/?{{date}}' style="max-height:75%; width:auto;">
+
+      <md-grid-tile-footer>
+        <h3>{{graph.input_name}}
+                    <md-button class="md-mini md-warn md-fab" aria-label='remove object' ng-click="remove(graphs, $index)" >
+                <md-icon md-svg-src="/static/icons/circle-slash.svg"></md-icon>
+            </md-button></h3>
+      </md-grid-tile-footer>
+    </md-grid-tile>
+
+
+  </md-grid-list>
   
     </md-content>
  
