@@ -82,14 +82,14 @@ def get_measurement(measurement_id):
     except Exception as e:
         return return_error(e)
 
-@app.route("/graph_measurement/<int:measurement_id>/<int:input_index>/")
-def graph_measurement(measurement_id, input_index):
+@app.route("/graph_measurement/<int:measurement_id>/<int:x_index>/<int:y_index>/")
+def graph_measurement(measurement_id, x_index, y_index):
     try:
         if measurement_id not in map(id, measurements):
             raise Exception("Cannot find measurement")
         for measurement in measurements:
             if id(measurement) == int(measurement_id):
-                file_name = measurement.to_graph(input_index)
+                file_name = measurement.to_graph(x_index, y_index)
                 return send_file(file_name, mimetype='image/png')
     except Exception as e:
         return return_error(e)

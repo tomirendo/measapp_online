@@ -42,11 +42,27 @@
           <md-button layout="row" class='md-warn' ng-show='measurement_data.running'> Running </md-button>
           <md-button layout="row" class='md-raised md-warn' ng-show='measurement_data.running' ng-click='stop_measurement()'> Stop Measurement </md-button>
 
-          <md-select ng-model="new_input_name" aria-label="select_input">
+          <md-list>
+          <md-list-item>
+            X Axis
+          </md-list-item>
+          <md-list-item>
+          <md-select ng-model="x_axis" aria-label="select_input">
               <md-option ng-repeat="input in series" value={{input}} class='md-warn'>
                 {{input}}
               </md-option>
             </md-select>
+            </md-list-item>
+            <md-list-item>
+            Y Axis
+          </md-list-item>
+          <md-list-item>
+          <md-select ng-model="y_axis" aria-label="select_input">
+              <md-option ng-repeat="input in series" value={{input}} class='md-warn'>
+                {{input}}
+              </md-option>
+            </md-select>
+            </md-list-item>
           <md-button ng-click="add_graph();" class='md-primary md-raised'> Add Graph</md-button>
 
       <md-progress-linear md-mode="indeterminate" ng-show="loading" ></md-progress-linear>
@@ -87,7 +103,7 @@
                   md-rowspan-xs="1"
                   ng-class="tile.background" >
       <md-icon md-svg-icon=""></md-icon>
-                  <img ng-src='/graph_measurement/{{measurement_id}}/{{graph.graph_input_index}}/?{{date}}' style="max-height:75%; width:auto;">
+                  <img ng-src='/graph_measurement/{{measurement_id}}/{{graph.graph_x_axis}}/{{graph.graph_y_axis}}/?{{date}}' style="max-height:75%; width:auto;">
 
       <md-grid-tile-footer>
         <h3>{{graph.input_name}}

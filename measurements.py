@@ -136,10 +136,12 @@ class Measurement:
         return list(filter(is_all_null, self.results))
 
 
-    def to_graph(self, input_index, to_differentiate = False):
-        X, *Ys = zip(*self.results)
-        plt.plot(X, Ys[input_index])
-        file_name = "temp_{}_{}.png".format(id(self), input_index)
+    def to_graph(self, x_index, y_index, to_differentiate = False):
+        columns = list(zip(*self.results))
+        #X, *Ys = zip(*self.results)
+        X,Y = columns[x_index], columns[y_index]
+        plt.plot(X,Y)
+        file_name = "temp_{}_{}_{}.png".format(id(self), x_index, y_index)
         plt.savefig(file_name)
         plt.clf()
         return os.path.abspath(file_name)

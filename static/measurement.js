@@ -49,9 +49,12 @@ angular.module('MyApp', ['chart.js','ngMaterial'])
       $scope.show_alert(response.data.error_description);
     } else{
       $scope.measurement_data = response.data.result ;
+      console.log($scope.measurement_data);
       if ($scope.first_time){
-      $scope.series = $scope.measurement_data.inputs.map( 
-                                                  function(input) { return input.device + ":" + input.input});
+      $scope.series = $scope.measurement_data.outputs.map( 
+                                                  function(output) { return output.device + ":" + output.output});
+      $scope.series = $scope.series.concat($scope.measurement_data.inputs.map( 
+                                                  function(input) { return input.device + ":" + input.input}));
       $scope.labels = $scope.measurement_data.range;
       $scope.first_time = false;
       $scope.new_input_name = $scope.series[0];
@@ -86,12 +89,14 @@ angular.module('MyApp', ['chart.js','ngMaterial'])
   $scope.series=[];
   $scope.options = {};
   $scope.graphs = [] ;
-  $scope.new_input_name = "";
+  $scope.x_axis = "";
+  $scope.y_axis = "";
   $scope.date = new Date().getTime();
 
   $scope.add_graph = function() {
-    index_of_input = $scope.series.indexOf($scope.new_input_name);
-    $scope.graphs.push({graph_input_index : index_of_input, input_name : $scope.new_input_name, diff : false})
+    index_of_x_axis = $scope.series.indexOf($scope.x_axis);
+    index_of_y_axis = $scope.series.indexOf($scope.y_axis);
+    $scope.graphs.push({graph_x_axis: index_of_x_axis, graph_y_axis: index_of_y_axis, input_name : $scope.new_input_name, diff : false})
   }
 
   }]).config(function($mdThemingProvider) {
