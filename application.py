@@ -94,8 +94,6 @@ def graph_measurement(measurement_id, input_index):
     except Exception as e:
         return return_error(e)
 
-
-
 @app.route("/stop_measurement/<int:measurement_id>/")
 def stop_measurement(measurement_id):
     try:
@@ -108,6 +106,12 @@ def stop_measurement(measurement_id):
     except Exception as e:
         return return_error(e)
 
+@app.route('/all_measurements/')
+def all_measurements():
+    try:
+        return return_response([[id(i),i.to_dict()] for i in measurements])
+    except Exception as e:
+        return return_error(e)
 
 if __name__ == "__main__":
     try : 

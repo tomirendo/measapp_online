@@ -113,11 +113,12 @@ class Measurement:
                 "results" : self.results,
                 "step_time" : self.step_time,
                 "name" : self.name,
-                "range" : list(self.range)
+                "range" : list(self.range),
+                "index" : self.index ,
                 }
 
     def to_meas_dict(self):
-        d = {'measdata' : {
+        d = {'mesdata' : {
             'data_version' : 3,
             'measurement_time' : self.datetime.isoformat(),
             'sweeped' : [i.to_dict() for i in self.outputs],
