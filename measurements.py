@@ -2,7 +2,9 @@ import numpy
 import os
 import csv
 from time import sleep
+from datetime import datetime
 import matplotlib.pyplot as plt
+from scipy.io import savemat
 
 class Output:
     def __init__(self, dictionary, device_finder = lambda x:x):
@@ -45,11 +47,25 @@ class Measurement:
         self.results = []
         self.range = []
         self.path = path
+        self.index = self.find_index()
+        self.datetime = None
+        self.properties_dict = {i.device.name : i.device.object.get_properties() for i in (self.outputs + self.inputs)}
         for output in self.outputs:
             if output.device.is_locked and output.device.owner != id(self):
                 raise Exception("Cannot use output device {}. Device is used by another measurement".format(output.device.name))
             output.device.owner = id(self)
             output.device.is_locked = True
+
+    def find_index(self):
+        file_numbers = [i[-8:-4] for i in os.listdir(self.path) if i.startswith(self.name) and not i.endswith('error.mat')]
+        number = max(map(int, file_numbers), default = 0) + 1
+        print(number)
+        return number
+
+    def file_name(self, error = False):
+        if error:
+            return "{}_{:04}.error.mat".format(self.name, self.index)
+        return "{}_{:04}.mat".format(self.name, self.index)
 
     def end_measurement(self):
         for output in self.outputs:
@@ -57,18 +73,18 @@ class Measurement:
                 output.device.is_locked = False
 
     def save_measurement(self, exception = False):
-        if exception: 
-            filename = self.name + ".error.csv"
-        else :
-            filename = self.name + ".csv"
-
+        filename = self.file_name(error = exception)
         full_path = os.path.join(self.path, filename)
 
-        with open(full_path, "w") as f:
-            writer = csv.writer(f)
-            writer.writerows(self.results)
+        print("Writing at path : {}".format(full_path))
+        data = self.to_meas_dict()
+        savemat(full_path, data)
+        # with open(full_path, "w") as f:
+        #     writer = csv.writer(f)
+        #     writer.writerows(self.results)
 
     def run(self):
+        self.datetime = datetime.now()
         try : 
             self.running = True
             if len(self.outputs) != 1:
@@ -99,6 +115,24 @@ class Measurement:
                 "name" : self.name,
                 "range" : list(self.range)
                 }
+
+    def to_meas_dict(self):
+        d = {'measdata' : {
+            'data_version' : 3,
+            'measurement_time' : self.datetime.isoformat(),
+            'sweeped' : [i.to_dict() for i in self.outputs],
+            'measured' : [i.to_dict() for i in self.inputs],
+            'metdata' : self.properties_dict,
+            'data' : self.clear_results(),
+            'comments' : "",
+        }}
+        return d
+
+    def clear_results(self):
+        def is_all_null(ls):
+            return any(i is not None for i in ls)
+        return list(filter(is_all_null, self.results))
+
 
     def to_graph(self, input_index, to_differentiate = False):
         X, *Ys = zip(*self.results)
