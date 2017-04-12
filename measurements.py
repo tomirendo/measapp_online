@@ -6,6 +6,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from scipy.io import savemat
 
+
 class Output:
     def __init__(self, dictionary, device_finder = lambda x:x):
         self.begin_value = dictionary['begin_value']
